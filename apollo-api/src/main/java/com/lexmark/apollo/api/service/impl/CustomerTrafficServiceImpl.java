@@ -1,5 +1,8 @@
 package com.lexmark.apollo.api.service.impl;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -10,10 +13,12 @@ import javax.sql.DataSource;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import com.lexmark.apollo.api.config.JdbcTemplateConfig;
 import com.lexmark.apollo.api.dto.CustomerTrafficResponseDto;
@@ -25,8 +30,10 @@ import com.lexmark.apollo.api.service.queries.CustomerTrafficQueryRowMapper;
 import com.lexmark.apollo.api.util.ApolloServiceException;
 
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
+@Slf4j
 public class CustomerTrafficServiceImpl implements CustomerTrafficService {
     
     @Getter
@@ -48,34 +55,55 @@ public class CustomerTrafficServiceImpl implements CustomerTrafficService {
     
     public CustomerTrafficResponseDto getCustomerTrafficData(String fromDate, String toDate) throws ApolloServiceException {
         
+        if(StringUtils.isEmpty(fromDate) || StringUtils.isEmpty(toDate)){
+            throw new IllegalArgumentException("Invalid date range");
+        }
+        
+        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        
+        try {
+            dateFormat.parse(fromDate);
+            dateFormat.parse(toDate);
+        } catch (ParseException e) {
+            log.error("Invalid date format", e);
+            throw new IllegalArgumentException("Invalid date format");
+        }
+        
+        CustomerTrafficResponseDto customerTrafficResponseDto = new CustomerTrafficResponseDto();
+        
         MapSqlParameterSource namedParameters = new MapSqlParameterSource();
         namedParameters.addValue("startDate", fromDate);
         namedParameters.addValue("endDate", toDate);
 
-        List<CustomerTrafficResponseDto.CustomerTraffic> customerTraffics = namedParameterJdbcTemplate.query(
-                CustomerTrafficQuery.SELECT_CUSTOMER_TRAFFIC_BETWEEN_DATES_QUERY, namedParameters, 
-                CustomerTrafficQueryRowMapper.CUSTOMER_TRAFFIC_ACTUAL_ROW_MAPPER);
-        
-        CustomerTrafficResponseDto customerTrafficResponseDto = new CustomerTrafficResponseDto();
-        if(customerTraffics != null){
-            customerTrafficResponseDto.setCustomerTraffics(customerTraffics);
-        }
-        
-        customerTrafficResponseDto.sortCustomerTraffic();
-        
-        List<CustomerTrafficResponseDto.CustomerTraffic> projectedCustomerTraffics = namedParameterJdbcTemplate.query(
-                CustomerTrafficQuery.SELECT_PROJECTED_CUSTOMER_TRAFFIC_BETWEEN_DATES_QUERY, namedParameters, 
-                CustomerTrafficQueryRowMapper.CUSTOMER_TRAFFIC_PROJECTED_ROW_MAPPER);
-        
-        mergeProjectedTraffic(customerTraffics, projectedCustomerTraffics);
-        
-        List<CustomerTrafficResponseDto.DemographicProfile> demographicProfiles = namedParameterJdbcTemplate.query(
-                CustomerTrafficQuery.SELECT_DEMOGRAPHIC_PROFILES_BETWEEN_DATES_QUERY, namedParameters, 
-                CustomerTrafficQueryRowMapper.DEMOGRAPHIC_PROFILE_ROW_MAPPER);
-        
-        if(demographicProfiles != null){
-            CustomerDemographicProfile customerDemographicProfile = CustomerTrafficResponseDto.createCustomerDemographicProfile(demographicProfiles);
-            customerTrafficResponseDto.setCustomerDemographicProfile(customerDemographicProfile);
+        try {
+            List<CustomerTrafficResponseDto.CustomerTraffic> customerTraffics = namedParameterJdbcTemplate.query(
+                    CustomerTrafficQuery.SELECT_CUSTOMER_TRAFFIC_BETWEEN_DATES_QUERY, namedParameters, 
+                    CustomerTrafficQueryRowMapper.CUSTOMER_TRAFFIC_ACTUAL_ROW_MAPPER);
+            
+            
+            if(customerTraffics != null){
+                customerTrafficResponseDto.setCustomerTraffics(customerTraffics);
+            }
+            
+            customerTrafficResponseDto.sortCustomerTraffic();
+            
+            List<CustomerTrafficResponseDto.CustomerTraffic> projectedCustomerTraffics = namedParameterJdbcTemplate.query(
+                    CustomerTrafficQuery.SELECT_PROJECTED_CUSTOMER_TRAFFIC_BETWEEN_DATES_QUERY, namedParameters, 
+                    CustomerTrafficQueryRowMapper.CUSTOMER_TRAFFIC_PROJECTED_ROW_MAPPER);
+            
+            mergeProjectedTraffic(customerTraffics, projectedCustomerTraffics);
+            
+            List<CustomerTrafficResponseDto.DemographicProfile> demographicProfiles = namedParameterJdbcTemplate.query(
+                    CustomerTrafficQuery.SELECT_DEMOGRAPHIC_PROFILES_BETWEEN_DATES_QUERY, namedParameters, 
+                    CustomerTrafficQueryRowMapper.DEMOGRAPHIC_PROFILE_ROW_MAPPER);
+            
+            if(demographicProfiles != null){
+                CustomerDemographicProfile customerDemographicProfile = CustomerTrafficResponseDto.createCustomerDemographicProfile(demographicProfiles);
+                customerTrafficResponseDto.setCustomerDemographicProfile(customerDemographicProfile);
+            }
+        } catch (DataAccessException e) {
+            log.error("Error occured while processing customer traffic information form: "+fromDate+" to: "+toDate,e);
+            throw new ApolloServiceException("Error occured while processing customer traffic information form: "+fromDate+" to: "+toDate,e);
         }
         
 
