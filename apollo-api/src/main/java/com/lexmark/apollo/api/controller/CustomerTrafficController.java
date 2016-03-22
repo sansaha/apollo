@@ -26,11 +26,9 @@ public class CustomerTrafficController {
         try {
             customerTrafficResponseDto = customerTrafficService.getCustomerTrafficData(startDate, endDate);
         } catch (ApolloServiceException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
 
-        //return populateCustomerTrafficResponseDto();
         return customerTrafficResponseDto;
    }
 

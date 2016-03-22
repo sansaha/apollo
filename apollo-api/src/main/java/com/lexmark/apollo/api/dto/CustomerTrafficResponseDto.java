@@ -3,9 +3,13 @@ package com.lexmark.apollo.api.dto;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.lexmark.apollo.api.serializer.CustomerDemographicProfileSerializer;
+import com.lexmark.apollo.api.serializer.JsonDateSerializer;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -19,6 +23,7 @@ public class CustomerTrafficResponseDto {
     
     @Getter
     @Setter
+    @JsonSerialize(using = CustomerDemographicProfileSerializer.class)
     private CustomerDemographicProfile customerDemographicProfile;
     
     public void addCustomerTraffic(CustomerTraffic customerTraffic){
@@ -41,9 +46,10 @@ public class CustomerTrafficResponseDto {
     }
     
     public static class CustomerTraffic implements Comparable<CustomerTraffic>{
+        
         @Getter
         @Setter
-        @JsonFormat(pattern="yyyy-MM-dd")
+        @JsonSerialize(using=JsonDateSerializer.class)
         private Date date;
         @Getter
         @Setter
@@ -82,57 +88,80 @@ public class CustomerTrafficResponseDto {
             
             for(DemographicProfile demographicProfile : demographicProfiles){
                 if(demographicProfile.getAge() == 0 || (demographicProfile.getAge() == 3 && demographicProfile.getGender() == 0)){
-                    this.unknownCount = unknownCount + demographicProfile.getCount();
+                    Integer unknownCount = valueMap.get(CustmerDemographyEnum.UNKNOWN);
+                    if(unknownCount == null){
+                        unknownCount = 0;
+                    }
+                    unknownCount = unknownCount + demographicProfile.getCount();
+                    valueMap.put(CustmerDemographyEnum.UNKNOWN, unknownCount);
                     continue;
                 }
                 if(demographicProfile.getAge() == 1){
-                    this.childCount = childCount + demographicProfile.getCount();
+                    Integer childCount = valueMap.get(CustmerDemographyEnum.CHILDREN);
+                    if(childCount == null){
+                        childCount = 0;
+                    }
+                    childCount = childCount + demographicProfile.getCount();
+                    valueMap.put(CustmerDemographyEnum.CHILDREN, childCount);
                     continue;
                 }
                 if(demographicProfile.getAge() == 2 && demographicProfile.getGender() == 0){
-                    this.youthCount = youthCount + demographicProfile.getCount();
+                    Integer youthCount = demographicProfile.getCount();
+                    valueMap.put(CustmerDemographyEnum.YOUTH, youthCount);
                     continue;
                 }
                 if(demographicProfile.getAge() == 2 && demographicProfile.getGender() == 1){
-                    this.youngMaleCount = youngMaleCount + demographicProfile.getCount();
+                    Integer youngMaleCount = demographicProfile.getCount();
+                    valueMap.put(CustmerDemographyEnum.YOUNG_MALE, youngMaleCount);
                     continue;
                 }
                 if(demographicProfile.getAge() == 2 && demographicProfile.getGender() == 2){
-                    this.youngFemaleCount = youngFemaleCount + demographicProfile.getCount();
+                    Integer youngFemaleCount = demographicProfile.getCount();
+                    valueMap.put(CustmerDemographyEnum.YOUNG_FEMALE, youngFemaleCount);
                     continue;
                 }
                 
                 if(demographicProfile.getAge() == 3 && demographicProfile.getGender() == 1){
-                    this.adultMaleCount = adultMaleCount + demographicProfile.getCount();
+                    Integer adultMaleCount = demographicProfile.getCount();
+                    valueMap.put(CustmerDemographyEnum.ADULT_MALE, adultMaleCount);
                     continue;
                 }
                 if(demographicProfile.getAge() == 3 && demographicProfile.getGender() == 2){
-                    this.adultFemaleCount = adultFemaleCount + demographicProfile.getCount();
+                    Integer adultFemaleCount = demographicProfile.getCount();
+                    valueMap.put(CustmerDemographyEnum.ADULT_FEMALE, adultFemaleCount);
                     continue;
                 }
                 if(demographicProfile.getAge() == 4){
-                    this.seniorCount = seniorCount + demographicProfile.getCount();
+                    Integer seniorCount = valueMap.get(CustmerDemographyEnum.SENIOR);
+                    if(seniorCount == null){
+                        seniorCount = 0;
+                    }
+                    seniorCount = seniorCount + demographicProfile.getCount();
+                    valueMap.put(CustmerDemographyEnum.SENIOR, seniorCount);
                 }
             }
         }
 
-        @Getter
-        private Integer unknownCount = 0;//(0,*) || (3,0)
-        @Getter
+        
+      /*  private Integer unknownCount = 0;//(0,*) || (3,0)
+        
         private Integer childCount = 0;//(1,*)
-        @Getter
+        
         private Integer youthCount = 0;//(2,0)
-        @Getter
+        
         private Integer youngMaleCount = 0;//(2,1)
-        @Getter
+        
         private Integer youngFemaleCount = 0;//(2,2)
-        @Getter
+        
         private Integer adultMaleCount = 0;//(3,1)
-        @Getter
+        
         private Integer adultFemaleCount = 0;//(3,2)
-        @Getter
+        
         private Integer seniorCount = 0;//(4,*)
- 
+*/        
+        @Getter
+        private Map<CustmerDemographyEnum,Integer> valueMap = new HashMap<CustmerDemographyEnum,Integer>(8);
+        
     }
     
     public static DemographicProfile createDemographicProfile(){
