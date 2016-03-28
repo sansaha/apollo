@@ -90,6 +90,8 @@ public class CustomerTrafficServiceImpl implements CustomerTrafficService {
             
             mergeProjectedTraffic(customerTraffics, projectedCustomerTraffics);
             
+            customerTrafficResponseDto.populateTrafficSegments();
+            
             List<CustomerTrafficResponseDto.DemographicProfile> demographicProfiles = namedParameterJdbcTemplate.query(
                     CustomerTrafficQuery.SELECT_DEMOGRAPHIC_PROFILES_BETWEEN_DATES_QUERY, namedParameters, 
                     CustomerTrafficQueryRowMapper.DEMOGRAPHIC_PROFILE_ROW_MAPPER);

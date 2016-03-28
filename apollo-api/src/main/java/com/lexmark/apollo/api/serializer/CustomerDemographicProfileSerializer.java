@@ -22,7 +22,7 @@ public class CustomerDemographicProfileSerializer extends JsonSerializer<Custome
         for (CustmerDemographyEnum custmerDemographyEnum : CustmerDemographyEnum.values()) {
             if (valueMap.get(custmerDemographyEnum) != null) {
                 arg1.writeStartObject();
-                arg1.writeStringField("key", custmerDemographyEnum.toString());
+                arg1.writeStringField("key", custmerDemographyEnum.getDescription());
                 arg1.writeNumberField("value", valueMap.get(custmerDemographyEnum));
                 arg1.writeEndObject();
             }
