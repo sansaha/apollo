@@ -1,14 +1,17 @@
 package com.lexmark.apollo.api.controller;
 
+import java.util.List;
+
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.lexmark.apollo.api.dto.SalesResponseDto;
+import com.lexmark.apollo.api.dto.SalesDto;
 import com.lexmark.apollo.api.service.SalesService;
 import com.lexmark.apollo.api.util.ApolloServiceException;
 
@@ -18,19 +21,58 @@ public class SalesController {
     @Autowired
     private SalesService salesService;
     
-    @RequestMapping(value = "/sales-report", method = RequestMethod.GET, produces = APPLICATION_JSON_VALUE)
-    public SalesResponseDto getSalesReport(@RequestParam String startDate,@RequestParam String endDate){
+    @RequestMapping(value = "/sales", method = RequestMethod.GET, produces = APPLICATION_JSON_VALUE)
+    public List<SalesDto> getSalesReport(@RequestParam String startDate,@RequestParam String endDate){
 
         try {
             return salesService.getSalesData(startDate, endDate);
         } catch (ApolloServiceException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
-        
         return null;
    }
-    
-   
 
+    @RequestMapping(value = "/sales/grosssales/topn/{topN}", method = RequestMethod.GET, produces = APPLICATION_JSON_VALUE)
+    public List<SalesDto> getGrossSalesTopNReport(@RequestParam String startDate,@RequestParam String endDate, @PathVariable int topN){
+
+        try {
+            return salesService.getGrossSalesTopNData(startDate, endDate, topN);
+        } catch (ApolloServiceException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    @RequestMapping(value = "/sales/grosssales/mostchanged/{mostChanged}", method = RequestMethod.GET, produces = APPLICATION_JSON_VALUE)
+    public List<SalesDto> getGrossSalesMostChangedReport(@RequestParam String startDate,@RequestParam String endDate, @PathVariable int mostChanged){
+
+        try {
+            return salesService.getGrossSalesMostChangedData(startDate, endDate, mostChanged);
+        } catch (ApolloServiceException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    @RequestMapping(value = "/sales/quantitysold/topn/{topN}", method = RequestMethod.GET, produces = APPLICATION_JSON_VALUE)
+    public List<SalesDto> getQuantitySoldTopNReport(@RequestParam String startDate,@RequestParam String endDate, @PathVariable int topN){
+
+        try {
+            return salesService.getQuantitySoldTopNData(startDate, endDate, topN);
+        } catch (ApolloServiceException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    @RequestMapping(value = "/sales/quantitysold/mostchanged/{mostChanged}", method = RequestMethod.GET, produces = APPLICATION_JSON_VALUE)
+    public List<SalesDto> getQuantitySoldMostChangedReport(@RequestParam String startDate,@RequestParam String endDate, @PathVariable int mostChanged){
+
+        try {
+            return salesService.getQuantitySoldMostChangedData(startDate, endDate, mostChanged);
+        } catch (ApolloServiceException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
 }

@@ -1,8 +1,5 @@
 package com.lexmark.apollo.api.service.impl;
 
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -18,7 +15,6 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 
 import com.lexmark.apollo.api.config.JdbcTemplateConfig;
 import com.lexmark.apollo.api.dto.CustomerTrafficResponseDto;
@@ -28,6 +24,7 @@ import com.lexmark.apollo.api.service.CustomerTrafficService;
 import com.lexmark.apollo.api.service.queries.CustomerTrafficQuery;
 import com.lexmark.apollo.api.service.queries.CustomerTrafficQueryRowMapper;
 import com.lexmark.apollo.api.util.ApolloServiceException;
+import com.lexmark.apollo.api.util.ApolloServiceHelper;
 
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -55,18 +52,18 @@ public class CustomerTrafficServiceImpl implements CustomerTrafficService {
     
     public CustomerTrafficResponseDto getCustomerTrafficData(String fromDate, String toDate) throws ApolloServiceException {
         
-        if(StringUtils.isEmpty(fromDate) || StringUtils.isEmpty(toDate)){
-            throw new IllegalArgumentException("Invalid date range");
+        try {
+            ApolloServiceHelper.validateDate(fromDate, null);
+        } catch (IllegalArgumentException e) {
+            log.error("Invalid formDate : "+fromDate, e);
+            throw new IllegalArgumentException("Invalid formDate : "+fromDate, e);
         }
         
-        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-        
         try {
-            dateFormat.parse(fromDate);
-            dateFormat.parse(toDate);
-        } catch (ParseException e) {
-            log.error("Invalid date format", e);
-            throw new IllegalArgumentException("Invalid date format");
+            ApolloServiceHelper.validateDate(toDate, null);
+        } catch (IllegalArgumentException e) {
+            log.error("Invalid toDate : "+toDate, e);
+            throw new IllegalArgumentException("Invalid toDate : "+toDate, e);
         }
         
         CustomerTrafficResponseDto customerTrafficResponseDto = new CustomerTrafficResponseDto();

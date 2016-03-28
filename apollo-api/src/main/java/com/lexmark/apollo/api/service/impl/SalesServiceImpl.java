@@ -1,166 +1,183 @@
 package com.lexmark.apollo.api.service.impl;
 
-import java.math.BigDecimal;
+import java.util.List;
 
+import javax.annotation.PostConstruct;
+import javax.sql.DataSource;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.dao.DataAccessException;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Service;
 
-import com.lexmark.apollo.api.dto.SalesResponseDto;
-import com.lexmark.apollo.api.dto.SalesResponseDto.SalesRecordDto;
+import com.lexmark.apollo.api.config.JdbcTemplateConfig;
+import com.lexmark.apollo.api.dto.SalesDto;
 import com.lexmark.apollo.api.service.SalesService;
+import com.lexmark.apollo.api.service.queries.SalesQuery;
+import com.lexmark.apollo.api.service.queries.SalesQueryRowMapper;
 import com.lexmark.apollo.api.util.ApolloServiceException;
+import com.lexmark.apollo.api.util.ApolloServiceHelper;
+
+import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
+@Slf4j
 public class SalesServiceImpl implements SalesService {
+    
+    @Getter
+    private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
-    public SalesResponseDto getSalesData(String startDate, String endDate) throws ApolloServiceException {
+    @Autowired
+    @Qualifier("redshiftDataSource")
+    private DataSource dataSource;
+
+    @Autowired
+    private JdbcTemplateConfig jdbcTemplateConfig;
+
+    @PostConstruct
+    public void init() {
+        JdbcTemplate template = new JdbcTemplate(dataSource);
+        template.setQueryTimeout(jdbcTemplateConfig.getQueryTimeout());
+        namedParameterJdbcTemplate = new NamedParameterJdbcTemplate(template);
+    }
+
+
+    public List<SalesDto> getSalesData(String startDate, String endDate) throws ApolloServiceException {
         
+        validateDateRange(startDate, endDate);
         
-        //TODO
-        return populateDummyResponse();
+        MapSqlParameterSource namedParameters = new MapSqlParameterSource();
+        namedParameters.addValue("startDate", startDate);
+        namedParameters.addValue("endDate", endDate);
+        
+        List<SalesDto> salesDtoList = null;
+        
+        try {
+            salesDtoList = namedParameterJdbcTemplate.query(
+                    SalesQuery.QUERY_SALES_DATA_BETWEEN_DATES, namedParameters, 
+                    SalesQueryRowMapper.SALES_BETWEEN_DATES_ROW_MAPPER);
+        } catch (DataAccessException e) {
+            log.error("Error occured while processing sales information form: "+startDate+" to: "+endDate,e);
+            throw new ApolloServiceException("Error occured while processing sales information form: "+startDate+" to: "+endDate,e);
+        }
+        
+        return salesDtoList;
     }
     
-    private SalesResponseDto populateDummyResponse(){
+
+    @Override
+    public List<SalesDto> getGrossSalesTopNData(String startDate, String endDate, int topN) throws ApolloServiceException {
         
-        SalesResponseDto salesResponseDto = new SalesResponseDto();
+        validateDateRange(startDate, endDate);
         
-        SalesRecordDto salesRecordDto1 = SalesResponseDto.createNewSalesRecordDto();
-        SalesRecordDto salesRecordDto2 = SalesResponseDto.createNewSalesRecordDto();
-        SalesRecordDto salesRecordDto3 = SalesResponseDto.createNewSalesRecordDto();
-        SalesRecordDto salesRecordDto4 = SalesResponseDto.createNewSalesRecordDto();
-        SalesRecordDto salesRecordDto5 = SalesResponseDto.createNewSalesRecordDto();
-        SalesRecordDto salesRecordDto6 = SalesResponseDto.createNewSalesRecordDto();
-        SalesRecordDto salesRecordDto7 = SalesResponseDto.createNewSalesRecordDto();
-        SalesRecordDto salesRecordDto8 = SalesResponseDto.createNewSalesRecordDto();
-        SalesRecordDto salesRecordDto9 = SalesResponseDto.createNewSalesRecordDto();
-        SalesRecordDto salesRecordDto10 = SalesResponseDto.createNewSalesRecordDto();
+        MapSqlParameterSource namedParameters = new MapSqlParameterSource();
+        namedParameters.addValue("startDate", startDate);
+        namedParameters.addValue("endDate", endDate);
+        namedParameters.addValue("recordCount", topN);
         
-        salesResponseDto.addSalesRecord(salesRecordDto1);
-        salesResponseDto.addSalesRecord(salesRecordDto2);
-        salesResponseDto.addSalesRecord(salesRecordDto3);
-        salesResponseDto.addSalesRecord(salesRecordDto4);
-        salesResponseDto.addSalesRecord(salesRecordDto5);
-        salesResponseDto.addSalesRecord(salesRecordDto6);
-        salesResponseDto.addSalesRecord(salesRecordDto7);
-        salesResponseDto.addSalesRecord(salesRecordDto8);
-        salesResponseDto.addSalesRecord(salesRecordDto9);
-        salesResponseDto.addSalesRecord(salesRecordDto10);
+        List<SalesDto> salesDtoList = null;
+                
+        try {
+            salesDtoList = namedParameterJdbcTemplate.query(
+                    SalesQuery.QUERY_GROSS_SALES_TOP_N_BETWEEN_DATES, namedParameters, 
+                    SalesQueryRowMapper.GROSS_SALES_TOP_N_BETWEEN_DATES_ROW_MAPPER);
+        } catch (DataAccessException e) {
+            log.error("Error occured while processing top sales information based on gross sale form: "+startDate+" to: "+endDate,e);
+            throw new ApolloServiceException("Error occured while processing top sales information based on gross sale form: "+startDate+" to: "+endDate,e);
+        }
         
-        int totalQuantitySold = 0;
-        double totalSalesAmount = 0;
+        return salesDtoList;
+    }
+
+    @Override
+    public List<SalesDto> getGrossSalesMostChangedData(String startDate, String endDate, int mostChanged) throws ApolloServiceException {
         
-       
-        salesRecordDto1.setFamilyGroup("Deli");
-        salesRecordDto1.setMajorGroup("FOOD");
-        salesRecordDto1.setItemName("Deli Chips");
-        salesRecordDto1.setDiscountPrice(BigDecimal.ZERO);
-        salesRecordDto1.setGrossPrice(new BigDecimal(300.25));
-        salesRecordDto1.setQuantitySold(24);
+        validateDateRange(startDate, endDate);
         
-        totalQuantitySold = totalQuantitySold + salesRecordDto1.getQuantitySold();
-        totalSalesAmount = totalSalesAmount + salesRecordDto1.getNetPrice().doubleValue();
+        MapSqlParameterSource namedParameters = new MapSqlParameterSource();
+        namedParameters.addValue("startDate", startDate);
+        namedParameters.addValue("endDate", endDate);
+        namedParameters.addValue("recordCount", mostChanged);
         
-        salesRecordDto2.setFamilyGroup("Hot Beverage");
-        salesRecordDto2.setMajorGroup("BEVERAGE");
-        salesRecordDto2.setItemName("Reg Coffee 16oz");
-        salesRecordDto2.setDiscountPrice(new BigDecimal(-0.5));
-        salesRecordDto2.setGrossPrice(new BigDecimal(120.25));
-        salesRecordDto2.setQuantitySold(5);
+        List<SalesDto> salesDtoList = null;
         
-        totalQuantitySold = totalQuantitySold + salesRecordDto2.getQuantitySold();
-        totalSalesAmount = totalSalesAmount + salesRecordDto2.getNetPrice().doubleValue();
+        try {
+            salesDtoList = namedParameterJdbcTemplate.query(
+                    SalesQuery.QUERY_GROSS_SALES_MOST_CHANGED_BETWEEN_DATES, namedParameters, 
+                    SalesQueryRowMapper.GROSS_SALES_MOST_CHANGED_BETWEEN_DATES_ROW_MAPPER);
+        } catch (DataAccessException e) {
+            log.error("Error occured while processing sales information based on gross sales change form: "+startDate+" to: "+endDate,e);
+            throw new ApolloServiceException("Error occured while processing sales information based on gross sales change form: "+startDate+" to: "+endDate,e);
+        }
         
-        salesRecordDto3.setFamilyGroup("Healthy GnG");
-        salesRecordDto3.setMajorGroup("RETAIL FOOD");
-        salesRecordDto3.setItemName("HUMMUS&REDPEPPER");
-        salesRecordDto3.setDiscountPrice(BigDecimal.ZERO);
-        salesRecordDto3.setGrossPrice(new BigDecimal(897.3));
-        salesRecordDto3.setQuantitySold(12);
+        return salesDtoList;
+    }
+
+    @Override
+    public List<SalesDto> getQuantitySoldTopNData(String startDate, String endDate, int topN) throws ApolloServiceException {
         
-        totalQuantitySold = totalQuantitySold + salesRecordDto3.getQuantitySold();
-        totalSalesAmount = totalSalesAmount + salesRecordDto3.getNetPrice().doubleValue();
+        validateDateRange(startDate, endDate);
         
-        salesRecordDto4.setFamilyGroup("Continental");
-        salesRecordDto4.setMajorGroup("FOOD");
-        salesRecordDto4.setItemName("Donut Lg");
-        salesRecordDto4.setDiscountPrice(BigDecimal.ZERO);
-        salesRecordDto4.setGrossPrice(new BigDecimal(200.58));
-        salesRecordDto4.setQuantitySold(2);
+        MapSqlParameterSource namedParameters = new MapSqlParameterSource();
+        namedParameters.addValue("startDate", startDate);
+        namedParameters.addValue("endDate", endDate);
+        namedParameters.addValue("recordCount", topN);
         
-        totalQuantitySold = totalQuantitySold + salesRecordDto4.getQuantitySold();
-        totalSalesAmount = totalSalesAmount + salesRecordDto4.getNetPrice().doubleValue();
+        List<SalesDto> salesDtoList = null;
         
-        salesRecordDto5.setFamilyGroup("Breakfast");
-        salesRecordDto5.setMajorGroup("FOOD");
-        salesRecordDto5.setItemName("Ham Croissant");
-        salesRecordDto5.setDiscountPrice(new BigDecimal(-2.01));
-        salesRecordDto5.setGrossPrice(new BigDecimal(400.55));
-        salesRecordDto5.setQuantitySold(50);
+        try {
+            salesDtoList = namedParameterJdbcTemplate.query(
+                    SalesQuery.QUERY_QUANTITY_SOLD_TOP_N_BETWEEN_DATES, namedParameters, 
+                    SalesQueryRowMapper.QUANTITY_SOLD_TOP_N_BETWEEN_DATES_ROW_MAPPER);
+        } catch (DataAccessException e) {
+            log.error("Error occured while processing top sales information based on quantity form: "+startDate+" to: "+endDate,e);
+            throw new ApolloServiceException("Error occured while processing top sales information based on quantity form: "+startDate+" to: "+endDate,e);
+        }
         
-        totalQuantitySold = totalQuantitySold + salesRecordDto5.getQuantitySold();
-        totalSalesAmount = totalSalesAmount + salesRecordDto5.getNetPrice().doubleValue();
+        return salesDtoList;
+    }
+
+    @Override
+    public List<SalesDto> getQuantitySoldMostChangedData(String startDate, String endDate, int mostChanged) throws ApolloServiceException {
         
-        salesRecordDto6.setFamilyGroup("Cold Beverage");
-        salesRecordDto6.setMajorGroup("BEVERAGE");
-        salesRecordDto6.setItemName("LgFountDrink");
-        salesRecordDto6.setDiscountPrice(new BigDecimal(-5.01));
-        salesRecordDto6.setGrossPrice(new BigDecimal(100.35));
-        salesRecordDto6.setQuantitySold(15);
+        validateDateRange(startDate, endDate);
         
-        totalQuantitySold = totalQuantitySold + salesRecordDto6.getQuantitySold();
-        totalSalesAmount = totalSalesAmount + salesRecordDto6.getNetPrice().doubleValue();
+        MapSqlParameterSource namedParameters = new MapSqlParameterSource();
+        namedParameters.addValue("startDate", startDate);
+        namedParameters.addValue("endDate", endDate);
+        namedParameters.addValue("recordCount", mostChanged);
         
-        salesRecordDto7.setFamilyGroup("Cold Beverage");
-        salesRecordDto7.setMajorGroup("RETAIL BEVERAGE");
-        salesRecordDto7.setItemName("Pureleaf Sweet");
-        salesRecordDto7.setDiscountPrice(BigDecimal.ZERO);
-        salesRecordDto7.setGrossPrice(new BigDecimal(406.35));
-        salesRecordDto7.setQuantitySold(20);
+        List<SalesDto> salesDtoList = null;
         
-        totalQuantitySold = totalQuantitySold + salesRecordDto7.getQuantitySold();
-        totalSalesAmount = totalSalesAmount + salesRecordDto7.getNetPrice().doubleValue();
+        try {
+            salesDtoList = namedParameterJdbcTemplate.query(
+                    SalesQuery.QUERY_QUANTITY_SOLD_MOST_CHANGED_BETWEEN_DATES, namedParameters, 
+                    SalesQueryRowMapper.QUANTITY_SOLD_MOST_CHANGED_BETWEEN_DATES_ROW_MAPPER);
+        } catch (DataAccessException e) {
+            log.error("Error occured while processing sales information based on most sold quantity change form: "+startDate+" to: "+endDate,e);
+            throw new ApolloServiceException("Error occured while processing sales information based on most sold quantity change form: "+startDate+" to: "+endDate,e);
+        }
         
-        salesRecordDto8.setFamilyGroup("Grill");
-        salesRecordDto8.setMajorGroup("FOOD");
-        salesRecordDto8.setItemName("Grill Side");
-        salesRecordDto8.setDiscountPrice(new BigDecimal(-10.21));
-        salesRecordDto8.setGrossPrice(new BigDecimal(879.25));
-        salesRecordDto8.setQuantitySold(25);
-        
-        totalQuantitySold = totalQuantitySold + salesRecordDto8.getQuantitySold();
-        totalSalesAmount = totalSalesAmount + salesRecordDto8.getNetPrice().doubleValue();
-        
-        salesRecordDto9.setFamilyGroup("Healthy Impulse");
-        salesRecordDto9.setMajorGroup("RETAIL FOOD");
-        salesRecordDto9.setItemName("NAB BELV BLUEBRY");
-        salesRecordDto9.setDiscountPrice(new BigDecimal(-5.09));
-        salesRecordDto9.setGrossPrice(new BigDecimal(980.25));
-        salesRecordDto9.setQuantitySold(50);
-        
-        totalQuantitySold = totalQuantitySold + salesRecordDto9.getQuantitySold();
-        totalSalesAmount = totalSalesAmount + salesRecordDto9.getNetPrice().doubleValue();
-        
-        salesRecordDto10.setFamilyGroup("Healthy Cold Bev");
-        salesRecordDto10.setMajorGroup("RETAIL BEVERAGE");
-        salesRecordDto10.setItemName("GTRADE FROST");
-        salesRecordDto10.setDiscountPrice(BigDecimal.ZERO);
-        salesRecordDto10.setGrossPrice(new BigDecimal(1250.25));
-        salesRecordDto10.setQuantitySold(75);
-        
-        totalQuantitySold = totalQuantitySold + salesRecordDto10.getQuantitySold();
-        totalSalesAmount = totalSalesAmount + salesRecordDto10.getNetPrice().doubleValue();
-        
-        salesRecordDto1.populatePercentages(totalQuantitySold, totalSalesAmount);
-        salesRecordDto2.populatePercentages(totalQuantitySold, totalSalesAmount);
-        salesRecordDto3.populatePercentages(totalQuantitySold, totalSalesAmount);
-        salesRecordDto4.populatePercentages(totalQuantitySold, totalSalesAmount);
-        salesRecordDto5.populatePercentages(totalQuantitySold, totalSalesAmount);
-        salesRecordDto6.populatePercentages(totalQuantitySold, totalSalesAmount);
-        salesRecordDto7.populatePercentages(totalQuantitySold, totalSalesAmount);
-        salesRecordDto8.populatePercentages(totalQuantitySold, totalSalesAmount);
-        salesRecordDto9.populatePercentages(totalQuantitySold, totalSalesAmount);
-        salesRecordDto10.populatePercentages(totalQuantitySold, totalSalesAmount);
-        
-        return salesResponseDto;
+        return salesDtoList;
     }
     
+    private void validateDateRange(String startDate, String endDate){
+        try {
+            ApolloServiceHelper.validateDate(startDate, null);
+        } catch (IllegalArgumentException e) {
+            log.error("Invalid startDate : "+startDate, e);
+            throw new IllegalArgumentException("Invalid startDate : "+startDate, e);
+        }
+        
+        try {
+            ApolloServiceHelper.validateDate(endDate, null);
+        } catch (IllegalArgumentException e) {
+            log.error("Invalid endDate : "+endDate, e);
+            throw new IllegalArgumentException("Invalid endDate : "+endDate, e);
+        }
+    }
 }
