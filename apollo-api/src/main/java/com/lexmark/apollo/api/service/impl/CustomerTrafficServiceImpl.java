@@ -53,14 +53,14 @@ public class CustomerTrafficServiceImpl implements CustomerTrafficService {
     public CustomerTrafficResponseDto getCustomerTrafficData(String fromDate, String toDate) throws ApolloServiceException {
         
         try {
-            ApolloServiceHelper.validateDate(fromDate, null);
+            ApolloServiceHelper.parseDate(fromDate, null);
         } catch (IllegalArgumentException e) {
             log.error("Invalid formDate : "+fromDate, e);
             throw new IllegalArgumentException("Invalid formDate : "+fromDate, e);
         }
         
         try {
-            ApolloServiceHelper.validateDate(toDate, null);
+            ApolloServiceHelper.parseDate(toDate, null);
         } catch (IllegalArgumentException e) {
             log.error("Invalid toDate : "+toDate, e);
             throw new IllegalArgumentException("Invalid toDate : "+toDate, e);

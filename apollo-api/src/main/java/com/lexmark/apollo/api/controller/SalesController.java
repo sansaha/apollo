@@ -1,8 +1,8 @@
 package com.lexmark.apollo.api.controller;
 
-import java.util.List;
-
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.lexmark.apollo.api.dto.SalesComparisonDto;
 import com.lexmark.apollo.api.dto.SalesDto;
 import com.lexmark.apollo.api.service.SalesService;
 import com.lexmark.apollo.api.util.ApolloServiceException;
@@ -73,6 +74,18 @@ public class SalesController {
         } catch (ApolloServiceException e) {
             e.printStackTrace();
         }
+        return null;
+    }
+    
+    @RequestMapping(value = "/sales/promotion-effectiveness", method = RequestMethod.GET, produces = APPLICATION_JSON_VALUE)
+    public SalesComparisonDto getPromotionEffictiveness(@RequestParam String promotionItem,@RequestParam String startDate,@RequestParam String endDate,@RequestParam String promoStartDate,@RequestParam (required = false) String promoEndDate){
+
+        try {
+            return salesService.getItemSalesEffectivenessForPromotion(promotionItem, startDate, endDate, promoStartDate, promoEndDate);
+        } catch (ApolloServiceException e) {
+            e.printStackTrace();
+        }
+    	
         return null;
     }
 }

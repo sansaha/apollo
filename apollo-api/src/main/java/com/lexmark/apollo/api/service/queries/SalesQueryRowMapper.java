@@ -25,7 +25,22 @@ public class SalesQueryRowMapper {
             return salesDto;
         }
         
-    };    
+    };
+    
+    public static final RowMapper<SalesDto> ITEM_SALES_DETAILS_BETWEEN_DATES_ROW_MAPPER = new RowMapper<SalesDto>(){
+
+        @Override
+        public SalesDto mapRow(ResultSet rs, int arg1) throws SQLException {
+            SalesDto salesDto = new SalesDto();
+            salesDto.setItem(rs.getString(1));
+            salesDto.setGrossSales(rs.getDouble(2));
+            salesDto.setQuantitySold(rs.getInt(3));
+            salesDto.setDate(rs.getString(4));
+
+            return salesDto;
+        }
+        
+    };
     
     public static final RowMapper<SalesDto> GROSS_SALES_TOP_N_BETWEEN_DATES_ROW_MAPPER = new RowMapper<SalesDto>(){
 

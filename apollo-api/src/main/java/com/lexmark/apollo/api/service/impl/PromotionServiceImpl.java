@@ -51,14 +51,14 @@ public class PromotionServiceImpl implements PromotionService {
     public List<PromotionDto> retrievePromotions(String startDate,String endDate) throws ApolloServiceException {
         
         try {
-            ApolloServiceHelper.validateDate(startDate, null);
+            ApolloServiceHelper.parseDate(startDate, null);
         } catch (IllegalArgumentException e) {
             log.error("Invalid startDate : "+startDate, e);
             throw new IllegalArgumentException("Invalid startDate : "+startDate, e);
         }
         
         try {
-            ApolloServiceHelper.validateDate(endDate, null);
+            ApolloServiceHelper.parseDate(endDate, null);
         } catch (IllegalArgumentException e) {
             log.error("Invalid endDate : "+endDate, e);
             throw new IllegalArgumentException("Invalid endDate : "+endDate, e);

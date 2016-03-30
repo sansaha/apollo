@@ -1,5 +1,7 @@
 package com.lexmark.apollo.api.service.impl;
 
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
@@ -14,6 +16,7 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Service;
 
 import com.lexmark.apollo.api.config.JdbcTemplateConfig;
+import com.lexmark.apollo.api.dto.SalesComparisonDto;
 import com.lexmark.apollo.api.dto.SalesDto;
 import com.lexmark.apollo.api.service.SalesService;
 import com.lexmark.apollo.api.service.queries.SalesQuery;
@@ -165,19 +168,130 @@ public class SalesServiceImpl implements SalesService {
         return salesDtoList;
     }
     
+    @Override
+	public SalesComparisonDto getItemSalesEffectivenessForPromotion(String item, String startDate, String endDate,
+			String promoStartDate, String promoEndDate) throws ApolloServiceException {
+		
+    	validateDateRange(startDate, endDate);
+    	
+    	Date promoStDt = null;
+    	
+    	try {
+    		promoStDt = ApolloServiceHelper.parseDate(promoStartDate, null);
+        } catch (IllegalArgumentException e) {
+            log.error("Invalid Promotion Start Date : "+promoStartDate, e);
+            throw new IllegalArgumentException("Invalid Promotion Start Date : "+promoStartDate, e);
+        }
+    	
+    	Date promoEndDt = null;
+    	
+    	if(promoEndDate != null){
+    		try {
+    			promoEndDt = ApolloServiceHelper.parseDate(promoEndDate, null);
+            } catch (IllegalArgumentException e) {
+                log.error("Invalid Promotion End Date : "+promoEndDate, e);
+                throw new IllegalArgumentException("Invalid Promotion End Date : "+promoEndDate, e);
+            }
+    	}
+    	
+    	//sales for promotion period
+    		Date userSelectionStDt = ApolloServiceHelper.parseDate(startDate, null);
+    		Date userSelectionEndDt = ApolloServiceHelper.parseDate(endDate, null);
+    		
+    		Date withinPromoQueryStartDate = null;
+    		Date withinPromoQueryEndDate = null;
+    		
+    		if(promoStDt.before(userSelectionStDt)){
+    			withinPromoQueryStartDate = userSelectionStDt;
+    		} else if (promoStDt.after(userSelectionStDt) || promoStDt.equals(userSelectionStDt)){
+    			withinPromoQueryStartDate = promoStDt;
+    		}
+    	
+    		if(promoEndDt == null){
+    			withinPromoQueryEndDate = userSelectionEndDt;
+    		} else if (promoEndDt.before(userSelectionEndDt) || promoEndDt.equals(userSelectionEndDt)){
+    			withinPromoQueryEndDate = promoEndDt;
+    		}
+    		
+    		SalesComparisonDto salesComparisonDto = new SalesComparisonDto();
+    		
+    		log.info("Within Promo Query Start Date:: "+withinPromoQueryStartDate);
+    		log.info("Within Promo Query End Date:: "+withinPromoQueryEndDate);
+    		
+    		List<SalesDto> salesWithinPromotion = getItemSalesDetailsByDate(item, ApolloServiceHelper.formatDate(withinPromoQueryStartDate, null), ApolloServiceHelper.formatDate(withinPromoQueryEndDate, null));
+    	
+    		salesComparisonDto.setCurrentSales(salesWithinPromotion);
+    		
+    		int effectivePromoDurationInDays = ApolloServiceHelper.getDurationInDays(withinPromoQueryStartDate, withinPromoQueryEndDate);
+    		
+    		//sales for other period
+    		Date withoutPromoQueryStartDate = null;
+    		Date withoutPromoQueryEndDate = null;
+    		
+    		Calendar withoutPromoQueryCal = Calendar.getInstance();
+    		withoutPromoQueryCal.setTime(promoStDt);
+    		
+    		if(effectivePromoDurationInDays >= 7){
+    			withoutPromoQueryCal.add(Calendar.DAY_OF_MONTH, -1);
+        		withoutPromoQueryEndDate = withoutPromoQueryCal.getTime();
+        		
+    			withoutPromoQueryCal.add(Calendar.DAY_OF_MONTH, (-1*(effectivePromoDurationInDays)));
+    			withoutPromoQueryStartDate = withoutPromoQueryCal.getTime();
+    		}else {
+    			withoutPromoQueryCal.add(Calendar.DAY_OF_MONTH, -7);
+    			withoutPromoQueryStartDate = withoutPromoQueryCal.getTime();
+    			
+    			withoutPromoQueryCal.add(Calendar.DAY_OF_MONTH, (effectivePromoDurationInDays));
+    			withoutPromoQueryEndDate = withoutPromoQueryCal.getTime();
+    		}
+    		
+    		log.info("Without Promo Query Start Date:: "+withoutPromoQueryStartDate);
+    		log.info("Without Promo Query End Date:: "+withoutPromoQueryEndDate);
+    		
+    		List<SalesDto> salesWithoutPromotion = getItemSalesDetailsByDate(item, ApolloServiceHelper.formatDate(withoutPromoQueryStartDate, null), ApolloServiceHelper.formatDate(withoutPromoQueryEndDate, null));
+        	
+    		salesComparisonDto.setPreviousSales(salesWithoutPromotion);
+
+		return salesComparisonDto;
+	}
+    
+    private List<SalesDto> getItemSalesDetailsByDate(String itemName,String startDate,String endDate)throws ApolloServiceException {
+    	
+    	MapSqlParameterSource namedParameters = new MapSqlParameterSource();
+        namedParameters.addValue("startDate", startDate);
+        namedParameters.addValue("endDate", endDate);
+        namedParameters.addValue("itemName", itemName);
+        
+        List<SalesDto> salesDtoList = null;
+        
+        try {
+            salesDtoList = namedParameterJdbcTemplate.query(
+                    SalesQuery.QUERY_ITEM_SALES_DETAILS_BETWEEN_DATES, namedParameters, 
+                    SalesQueryRowMapper.ITEM_SALES_DETAILS_BETWEEN_DATES_ROW_MAPPER);
+        } catch (DataAccessException e) {
+            log.error("Error occured while processing item sales information form: "+startDate+" to: "+endDate,e);
+            throw new ApolloServiceException("Error occured while processing item sales information form: "+startDate+" to: "+endDate,e);
+        }
+        
+        return salesDtoList;
+    }
+    
     private void validateDateRange(String startDate, String endDate){
         try {
-            ApolloServiceHelper.validateDate(startDate, null);
+            ApolloServiceHelper.parseDate(startDate, null);
         } catch (IllegalArgumentException e) {
             log.error("Invalid startDate : "+startDate, e);
             throw new IllegalArgumentException("Invalid startDate : "+startDate, e);
         }
         
         try {
-            ApolloServiceHelper.validateDate(endDate, null);
+            ApolloServiceHelper.parseDate(endDate, null);
         } catch (IllegalArgumentException e) {
             log.error("Invalid endDate : "+endDate, e);
             throw new IllegalArgumentException("Invalid endDate : "+endDate, e);
         }
     }
+
+
+	
 }
