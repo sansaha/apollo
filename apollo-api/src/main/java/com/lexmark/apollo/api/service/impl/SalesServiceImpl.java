@@ -68,6 +68,8 @@ public class SalesServiceImpl implements SalesService {
             throw new ApolloServiceException("Error occured while processing sales information form: "+startDate+" to: "+endDate,e);
         }
         
+        ApolloServiceHelper.populateSalePercentage(salesDtoList);
+        
         return salesDtoList;
     }
     

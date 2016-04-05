@@ -11,6 +11,7 @@ public class SalesDto {
     private double grossSales;
     private double itemDiscounts;
     private double salesLessItemDiscounts;
+    private double salePercentage;
     private double avaragePrice;
     private String date;
     private int quantitySold;
