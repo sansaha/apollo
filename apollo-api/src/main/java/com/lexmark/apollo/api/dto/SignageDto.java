@@ -3,6 +3,10 @@ package com.lexmark.apollo.api.dto;
 import java.io.Serializable;
 import java.util.Date;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.lexmark.apollo.api.serializer.CustomerDemographicProfileSerializer;
+
 import lombok.Data;
 
 @Data
@@ -13,12 +17,19 @@ public class SignageDto implements Serializable {
 	 */
 	private static final long serialVersionUID = -8534977083811301886L;
 	
+	@JsonIgnore
 	private Integer locationId;
-	private String description;
+	@JsonIgnore
 	private Date startDateTime;
+	@JsonIgnore
 	private Date endDateTime;
+	private String description;
 	private Integer recentViewerCount;
 	private Integer averageViewerCount;
+	@JsonSerialize(using = CustomerDemographicProfileSerializer.class)
+	private CustomerDemographicProfileDto averageCustomersDemographicProfile;
+	@JsonSerialize(using = CustomerDemographicProfileSerializer.class)
+	private CustomerDemographicProfileDto recentCustomersDemographicProfile;
 	
 	@Override
 	public boolean equals(Object obj) {

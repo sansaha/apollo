@@ -17,23 +17,27 @@ public class CustomerDemographicProfileDto {
 	private int totalCount;
     
     public CustomerDemographicProfileDto(List<DemographicProfileDto> demographicProfiles){
+    	
+    	valueMap.put(CustmerDemographyEnum.UNKNOWN, 0);
+    	valueMap.put(CustmerDemographyEnum.CHILDREN, 0);
+    	valueMap.put(CustmerDemographyEnum.YOUTH, 0);
+    	valueMap.put(CustmerDemographyEnum.YOUNG_MALE, 0);
+    	valueMap.put(CustmerDemographyEnum.YOUNG_FEMALE, 0);
+    	valueMap.put(CustmerDemographyEnum.ADULT_MALE, 0);
+    	valueMap.put(CustmerDemographyEnum.ADULT_FEMALE, 0);
+    	valueMap.put(CustmerDemographyEnum.SENIOR, 0);
         
         for(DemographicProfileDto demographicProfile : demographicProfiles){
         	totalCount = totalCount + demographicProfile.getCount();
             if(demographicProfile.getAge() == 0 || (demographicProfile.getAge() == 3 && demographicProfile.getGender() == 0)){
                 Integer unknownCount = valueMap.get(CustmerDemographyEnum.UNKNOWN);
-                if(unknownCount == null){
-                    unknownCount = 0;
-                }
                 unknownCount = unknownCount + demographicProfile.getCount();
                 valueMap.put(CustmerDemographyEnum.UNKNOWN, unknownCount);
                 continue;
             }
             if(demographicProfile.getAge() == 1){
                 Integer childCount = valueMap.get(CustmerDemographyEnum.CHILDREN);
-                if(childCount == null){
-                    childCount = 0;
-                }
+                
                 childCount = childCount + demographicProfile.getCount();
                 valueMap.put(CustmerDemographyEnum.CHILDREN, childCount);
                 continue;
@@ -66,9 +70,6 @@ public class CustomerDemographicProfileDto {
             }
             if(demographicProfile.getAge() == 4){
                 Integer seniorCount = valueMap.get(CustmerDemographyEnum.SENIOR);
-                if(seniorCount == null){
-                    seniorCount = 0;
-                }
                 seniorCount = seniorCount + demographicProfile.getCount();
                 valueMap.put(CustmerDemographyEnum.SENIOR, seniorCount);
             }
