@@ -2,7 +2,7 @@ package com.lexmark.apollo.api.service.queries;
 
 public class SalesQuery {
     
-    public static final String QUERY_SALES_DATA_BETWEEN_DATES = "select item,family_group, major_group,sum(gross_sales),sum(item_discounts),sum(sales_less_item_disc),round(avg(average_price), 2)"
+    public static final String QUERY_SALES_DATA_BETWEEN_DATES = "select item,family_group, major_group,sum(gross_sales),sum(item_discounts),sum(sales_less_item_disc),round(avg(average_price), 2),sum(qty_sold)"
             + " from lexmark_prod.lexmark_pos where date::date between :startDate and :endDate group by item, family_group, major_group order by item, family_group, major_group";
     
     public static final String QUERY_ITEM_SALES_DETAILS_BETWEEN_DATES = "select item,gross_sales,qty_sold,date::date"

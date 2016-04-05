@@ -21,6 +21,7 @@ public class SalesQueryRowMapper {
             salesDto.setItemDiscounts(rs.getDouble(5));
             salesDto.setSalesLessItemDiscounts(rs.getDouble(6));
             salesDto.setAvaragePrice(rs.getDouble(7));
+            salesDto.setQuantitySold(rs.getInt(8));
 
             return salesDto;
         }
