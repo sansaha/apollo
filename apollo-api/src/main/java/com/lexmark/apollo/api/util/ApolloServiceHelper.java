@@ -62,6 +62,16 @@ public class ApolloServiceHelper {
 
     	return difference;
     }
+    
+    public static boolean isBetweenDates(Date inputDate,Date startDate,Date endDate){
+    	boolean match = false;
+    	if(startDate.equals(inputDate) || 
+				(startDate.before(inputDate) && endDate.after(inputDate)) ||
+				endDate.equals(inputDate)){
+			match = true;
+		}
+    	return match;
+    }
         
     
 

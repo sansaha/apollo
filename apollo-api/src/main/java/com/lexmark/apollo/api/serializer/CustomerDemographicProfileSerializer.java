@@ -8,12 +8,12 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.lexmark.apollo.api.dto.CustmerDemographyEnum;
-import com.lexmark.apollo.api.dto.CustomerTrafficResponseDto.CustomerDemographicProfile;
+import com.lexmark.apollo.api.dto.CustomerDemographicProfileDto;
 
-public class CustomerDemographicProfileSerializer extends JsonSerializer<CustomerDemographicProfile> {
+public class CustomerDemographicProfileSerializer extends JsonSerializer<CustomerDemographicProfileDto> {
 
     @Override
-    public void serialize(CustomerDemographicProfile arg0, JsonGenerator arg1, SerializerProvider arg2)
+    public void serialize(CustomerDemographicProfileDto arg0, JsonGenerator arg1, SerializerProvider arg2)
             throws IOException, JsonProcessingException {
 
         arg1.writeStartArray();
