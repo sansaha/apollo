@@ -56,6 +56,17 @@ public class SalesController {
         }
         return null;
     }
+    
+    @RequestMapping(value = "/sales/grosssales", method = RequestMethod.POST, produces = APPLICATION_JSON_VALUE)
+    public List<SalesDto> getGrossSalesReportByItems(@RequestParam String startDate,@RequestParam String endDate, @RequestParam String[] items){
+
+        try {
+            return salesService.getGrossSalesUserSelectedData(startDate, endDate, items);
+        } catch (ApolloServiceException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
 
     @RequestMapping(value = "/sales/quantitysold/topn/{topN}", method = RequestMethod.GET, produces = APPLICATION_JSON_VALUE)
     public List<SalesDto> getQuantitySoldTopNReport(@RequestParam String startDate,@RequestParam String endDate, @PathVariable int topN){
@@ -79,7 +90,18 @@ public class SalesController {
         return null;
     }
     
-    @RequestMapping(value = "/sales/promotion-effectiveness", method = RequestMethod.GET, produces = APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/sales/quantitysold", method = RequestMethod.POST, produces = APPLICATION_JSON_VALUE)
+    public List<SalesDto> getQuantitySoldReportByItems(@RequestParam String startDate,@RequestParam String endDate, @RequestParam String[] items){
+
+        try {
+            return salesService.getQuantitySoldUserSelectData(startDate, endDate, items);
+        } catch (ApolloServiceException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+    
+    @RequestMapping(value = "/sales/promotion-effectiveness", method = RequestMethod.POST, produces = APPLICATION_JSON_VALUE)
     public SalesComparisonDto getPromotionEffictiveness(@RequestParam String promotionItem,@RequestParam String startDate,@RequestParam String endDate,@RequestParam String promoStartDate,@RequestParam (required = false) String promoEndDate){
 
         try {

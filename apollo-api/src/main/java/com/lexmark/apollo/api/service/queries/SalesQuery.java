@@ -15,6 +15,9 @@ public class SalesQuery {
     public static final String QUERY_GROSS_SALES_MOST_CHANGED_BETWEEN_DATES = "select item, gross_sales, date::date from lexmark_prod.lexmark_pos where item in (select item"
                 +" from lexmark_prod.lexmark_pos where date::date between :startDate and :endDate group by item having stddev(gross_sales) > 0 order by stddev(gross_sales) desc limit :recordCount)" 
                 +" and date::date between :startDate and :endDate order by item, date::date, gross_sales desc";
+    
+    public static final String QUERY_GROSS_SALES_FOR_ITEMS_BETWEEN_DATES = "select item, gross_sales, date::date from lexmark_prod.lexmark_pos where" 
+            +" date::date between :startDate and :endDate and item in (:items) order by item, date::date, gross_sales desc";
 
     
     public static final String QUERY_QUANTITY_SOLD_TOP_N_BETWEEN_DATES = "select item, qty_sold, date::date from lexmark_prod.lexmark_pos where item in ( select item from lexmark_prod.lexmark_pos where" 
@@ -24,5 +27,8 @@ public class SalesQuery {
     public static final String QUERY_QUANTITY_SOLD_MOST_CHANGED_BETWEEN_DATES = "select item, qty_sold, date::date from lexmark_prod.lexmark_pos where item in (select item from lexmark_prod.lexmark_pos where"
                 +" date::date between :startDate and :endDate group by item having stddev(qty_sold) > 0 order by stddev(qty_sold) desc limit :recordCount) and date::date between :startDate and :endDate" 
                 +" order by item, date, qty_sold desc";
+    
+    public static final String QUERY_QUANTITY_SOLD_FOR_ITEMS_BETWEEN_DATES = "select item, qty_sold, date::date from lexmark_prod.lexmark_pos where date::date between :startDate and :endDate and item in (:items)" 
+            +" order by item, date, qty_sold desc";
 
 }
