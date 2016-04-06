@@ -3,6 +3,7 @@ package com.lexmark.apollo.api.controller;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -13,6 +14,7 @@ import com.lexmark.apollo.api.service.SignageService;
 import com.lexmark.apollo.api.util.ApolloServiceException;
 
 @RestController
+@CrossOrigin
 public class SignageController {
 	
 	@Autowired
