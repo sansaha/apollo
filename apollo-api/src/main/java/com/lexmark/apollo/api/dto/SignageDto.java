@@ -24,12 +24,20 @@ public class SignageDto implements Serializable {
 	@JsonIgnore
 	private Date endDateTime;
 	private String description;
-	private Integer recentViewerCount;
-	private Integer averageViewerCount;
+	private Integer viewerCount;
+	
 	@JsonSerialize(using = CustomerDemographicProfileSerializer.class)
-	private CustomerDemographicProfileDto averageCustomersDemographicProfile;
-	@JsonSerialize(using = CustomerDemographicProfileSerializer.class)
-	private CustomerDemographicProfileDto recentCustomersDemographicProfile;
+	private CustomerDemographicProfileDto customersDemographicProfile;
+	
+	public SignageDto copySignage(){
+	    SignageDto signageDto = new SignageDto();
+	    signageDto.setDescription(this.description);
+	    signageDto.setEndDateTime(this.endDateTime);
+	    signageDto.setStartDateTime(this.startDateTime);
+	    signageDto.setLocationId(this.locationId);
+	    
+	    return signageDto;
+	}
 	
 	@Override
 	public boolean equals(Object obj) {

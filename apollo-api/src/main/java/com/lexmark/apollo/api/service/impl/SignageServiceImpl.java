@@ -84,8 +84,6 @@ public class SignageServiceImpl implements SignageService {
 					SignageQuery.SELECT_CUSTOMER_TRAFFIC_BETWEEN_DATES_QUERY, namedParametersForSignage,
 					SignageQueryRowMapper.SIGNAGE_BETWEEN_DATES_ROW_MAPPER);
 
-			signageEffectivenessResponseDto.setAllSignages(signages);
-
 			int totalSignages = signages != null ? signages.size() : 0;
 
 			Date signageEndDate = null;
@@ -119,6 +117,8 @@ public class SignageServiceImpl implements SignageService {
 
 				Map<SignageDto, List<DemographicProfileDto>> signageDemographyMap = new HashMap<SignageDto, List<DemographicProfileDto>>();
 				List<SignageDto> recentSignages = new ArrayList<SignageDto>();
+				List<SignageDto> averageSignages = new ArrayList<SignageDto>();
+				List<SignageDto> historicalSignages = new ArrayList<SignageDto>();
 
 				Calendar yesterday = Calendar.getInstance();
 				yesterday.add(Calendar.DAY_OF_MONTH, -1);
@@ -133,9 +133,12 @@ public class SignageServiceImpl implements SignageService {
 						Date signageStartDateTime = signageDto.getStartDateTime();
 						Date signageEndDateTime = signageDto.getEndDateTime();
 
-						if (recentSignages.contains(signageDto) == false && ApolloServiceHelper
+						if (averageSignages.contains(signageDto) == false && ApolloServiceHelper
 								.isBetweenDates(yesterday.getTime(), signageStartDateTime, signageEndDateTime)) {
-							recentSignages.add(signageDto);
+						    averageSignages.add(signageDto);
+						} else if(historicalSignages.contains(signageDto) == false && ApolloServiceHelper
+                                .isBetweenDates(yesterday.getTime(), signageStartDateTime, signageEndDateTime) == false){
+						    historicalSignages.add(signageDto);
 						}
 
 						if (ApolloServiceHelper.isBetweenDates(demographicDateTime, signageStartDateTime,
@@ -158,6 +161,8 @@ public class SignageServiceImpl implements SignageService {
 				}
 
 				signageEffectivenessResponseDto.setRecentSignages(recentSignages);
+				signageEffectivenessResponseDto.setAverageSignages(averageSignages);
+				signageEffectivenessResponseDto.setHistoricalSignages(historicalSignages);
 
 				for (SignageDto signageDto : signages) {
 					List<DemographicProfileDto> signageSpecificDemographyList = signageDemographyMap.get(signageDto);
@@ -168,12 +173,15 @@ public class SignageServiceImpl implements SignageService {
 						int signageDuration = ApolloServiceHelper.getDurationInDays(signageDto.getStartDateTime(),
 								signageDto.getEndDateTime());
 						int averageTraffic = totalTraffic / signageDuration;
-						signageDto.setAverageViewerCount(averageTraffic);
-						signageDto.setAverageCustomersDemographicProfile(customerDemographicProfileDto);
+						signageDto.setViewerCount(averageTraffic);
+						signageDto.setCustomersDemographicProfile(customerDemographicProfileDto);
 					}
 
 					if (ApolloServiceHelper.isBetweenDates(yesterday.getTime(), signageDto.getStartDateTime(),
 							signageDto.getEndDateTime())) {
+					    
+					    SignageDto recentSignageDto = signageDto.copySignage();
+					    recentSignages.add(recentSignageDto);
 						// have to update the recent demography
 						if (signageSpecificDemographyList != null) {
 							List<DemographicProfileDto> recentSignageSpecificDemographyList = new ArrayList<DemographicProfileDto>();
@@ -189,8 +197,8 @@ public class SignageServiceImpl implements SignageService {
 							CustomerDemographicProfileDto recentCustomerDemographicProfileDto = new CustomerDemographicProfileDto(
 									recentSignageSpecificDemographyList);
 							int totalTraffic = recentCustomerDemographicProfileDto.getTotalCount();
-							signageDto.setRecentViewerCount(totalTraffic);
-							signageDto.setRecentCustomersDemographicProfile(recentCustomerDemographicProfileDto);
+							recentSignageDto.setViewerCount(totalTraffic);
+							recentSignageDto.setCustomersDemographicProfile(recentCustomerDemographicProfileDto);
 
 						}
 					}

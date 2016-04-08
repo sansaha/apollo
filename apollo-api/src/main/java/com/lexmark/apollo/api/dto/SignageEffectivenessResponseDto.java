@@ -9,7 +9,9 @@ public class SignageEffectivenessResponseDto {
 	
 	private List<SignageDto> recentSignages;
 	
-	private List<SignageDto> allSignages;
+	private List<SignageDto> averageSignages;
+	
+	private List<SignageDto> historicalSignages;
 	
 
 }
