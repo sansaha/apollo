@@ -21,6 +21,7 @@ public class SalesQueryRowMapper {
             salesDto.setItemDiscounts(rs.getDouble(5));
             salesDto.setSalesLessItemDiscounts(rs.getDouble(6));
             salesDto.setAvaragePrice(rs.getDouble(7));
+            salesDto.setQuantitySold(rs.getInt(8));
 
             return salesDto;
         }
@@ -42,7 +43,7 @@ public class SalesQueryRowMapper {
         
     };
     
-    public static final RowMapper<SalesDto> GROSS_SALES_TOP_N_BETWEEN_DATES_ROW_MAPPER = new RowMapper<SalesDto>(){
+    public static final RowMapper<SalesDto> GROSS_SALES_BETWEEN_DATES_ROW_MAPPER = new RowMapper<SalesDto>(){
 
         @Override
         public SalesDto mapRow(ResultSet rs, int arg1) throws SQLException {
@@ -55,20 +56,8 @@ public class SalesQueryRowMapper {
         
     };
     
-    public static final RowMapper<SalesDto> GROSS_SALES_MOST_CHANGED_BETWEEN_DATES_ROW_MAPPER = new RowMapper<SalesDto>(){
-
-        @Override
-        public SalesDto mapRow(ResultSet rs, int arg1) throws SQLException {
-            SalesDto salesDto = new SalesDto();
-            salesDto.setItem(rs.getString(1));
-            salesDto.setGrossSales(rs.getDouble(2));
-            salesDto.setDate(rs.getString(3));
-            return salesDto;
-        }
-        
-    };    
     
-    public static final RowMapper<SalesDto> QUANTITY_SOLD_TOP_N_BETWEEN_DATES_ROW_MAPPER = new RowMapper<SalesDto>(){
+    public static final RowMapper<SalesDto> QUANTITY_SOLD_BETWEEN_DATES_ROW_MAPPER = new RowMapper<SalesDto>(){
 
         @Override
         public SalesDto mapRow(ResultSet rs, int arg1) throws SQLException {
@@ -81,17 +70,4 @@ public class SalesQueryRowMapper {
         
     };
     
-    public static final RowMapper<SalesDto> QUANTITY_SOLD_MOST_CHANGED_BETWEEN_DATES_ROW_MAPPER = new RowMapper<SalesDto>(){
-
-        @Override
-        public SalesDto mapRow(ResultSet rs, int arg1) throws SQLException {
-            SalesDto salesDto = new SalesDto();
-            salesDto.setItem(rs.getString(1));
-            salesDto.setQuantitySold(rs.getInt(2));
-            salesDto.setDate(rs.getString(3));
-            return salesDto;
-        }
-        
-    };
-
 }

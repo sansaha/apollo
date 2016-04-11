@@ -5,6 +5,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -17,6 +18,7 @@ import com.lexmark.apollo.api.service.SalesService;
 import com.lexmark.apollo.api.util.ApolloServiceException;
 
 @RestController
+@CrossOrigin
 public class SalesController {
     
     @Autowired
@@ -54,6 +56,17 @@ public class SalesController {
         }
         return null;
     }
+    
+    @RequestMapping(value = "/sales/grosssales", method = RequestMethod.POST, produces = APPLICATION_JSON_VALUE)
+    public List<SalesDto> getGrossSalesReportByItems(@RequestParam String startDate,@RequestParam String endDate, @RequestParam String[] items){
+
+        try {
+            return salesService.getGrossSalesUserSelectedData(startDate, endDate, items);
+        } catch (ApolloServiceException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
 
     @RequestMapping(value = "/sales/quantitysold/topn/{topN}", method = RequestMethod.GET, produces = APPLICATION_JSON_VALUE)
     public List<SalesDto> getQuantitySoldTopNReport(@RequestParam String startDate,@RequestParam String endDate, @PathVariable int topN){
@@ -77,7 +90,18 @@ public class SalesController {
         return null;
     }
     
-    @RequestMapping(value = "/sales/promotion-effectiveness", method = RequestMethod.GET, produces = APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/sales/quantitysold", method = RequestMethod.POST, produces = APPLICATION_JSON_VALUE)
+    public List<SalesDto> getQuantitySoldReportByItems(@RequestParam String startDate,@RequestParam String endDate, @RequestParam String[] items){
+
+        try {
+            return salesService.getQuantitySoldUserSelectData(startDate, endDate, items);
+        } catch (ApolloServiceException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+    
+    @RequestMapping(value = "/sales/promotion-effectiveness", method = RequestMethod.POST, produces = APPLICATION_JSON_VALUE)
     public SalesComparisonDto getPromotionEffictiveness(@RequestParam String promotionItem,@RequestParam String startDate,@RequestParam String endDate,@RequestParam String promoStartDate,@RequestParam (required = false) String promoEndDate){
 
         try {

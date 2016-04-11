@@ -1,11 +1,15 @@
 package com.lexmark.apollo.api.util;
 
 import java.text.DateFormat;
+import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 
 import org.springframework.util.StringUtils;
+
+import com.lexmark.apollo.api.dto.SalesDto;
 
 public class ApolloServiceHelper {
     
@@ -61,6 +65,31 @@ public class ApolloServiceHelper {
     	int difference = (int) ((endDate.getTime() - startDate.getTime())/(24*3600000));
 
     	return difference;
+    }
+    
+    public static boolean isBetweenDates(Date inputDate,Date startDate,Date endDate){
+    	boolean match = false;
+    	if(startDate.equals(inputDate) || 
+				(startDate.before(inputDate) && endDate.after(inputDate)) ||
+				endDate.equals(inputDate)){
+			match = true;
+		}
+    	return match;
+    }
+    
+    public static void populateSalePercentage(List<SalesDto> salesDtoList){
+    	if(salesDtoList != null && salesDtoList.isEmpty() == false){
+    		double totalSales = 0;
+    		for(SalesDto salesDto : salesDtoList){
+    			totalSales = totalSales + salesDto.getSalesLessItemDiscounts();
+    		}
+    		
+    		for(SalesDto salesDto : salesDtoList){
+    			DecimalFormat decimalFormat = new DecimalFormat("##.00");
+    			double salesPercentage = (salesDto.getSalesLessItemDiscounts()*100.0)/totalSales;
+    			salesDto.setSalePercentage(Double.parseDouble(decimalFormat.format(salesPercentage)));
+    		}
+    	}
     }
         
     

@@ -1,5 +1,6 @@
 package com.lexmark.apollo.api.service.impl;
 
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -68,6 +69,8 @@ public class SalesServiceImpl implements SalesService {
             throw new ApolloServiceException("Error occured while processing sales information form: "+startDate+" to: "+endDate,e);
         }
         
+        ApolloServiceHelper.populateSalePercentage(salesDtoList);
+        
         return salesDtoList;
     }
     
@@ -87,7 +90,7 @@ public class SalesServiceImpl implements SalesService {
         try {
             salesDtoList = namedParameterJdbcTemplate.query(
                     SalesQuery.QUERY_GROSS_SALES_TOP_N_BETWEEN_DATES, namedParameters, 
-                    SalesQueryRowMapper.GROSS_SALES_TOP_N_BETWEEN_DATES_ROW_MAPPER);
+                    SalesQueryRowMapper.GROSS_SALES_BETWEEN_DATES_ROW_MAPPER);
         } catch (DataAccessException e) {
             log.error("Error occured while processing top sales information based on gross sale form: "+startDate+" to: "+endDate,e);
             throw new ApolloServiceException("Error occured while processing top sales information based on gross sale form: "+startDate+" to: "+endDate,e);
@@ -111,10 +114,38 @@ public class SalesServiceImpl implements SalesService {
         try {
             salesDtoList = namedParameterJdbcTemplate.query(
                     SalesQuery.QUERY_GROSS_SALES_MOST_CHANGED_BETWEEN_DATES, namedParameters, 
-                    SalesQueryRowMapper.GROSS_SALES_MOST_CHANGED_BETWEEN_DATES_ROW_MAPPER);
+                    SalesQueryRowMapper.GROSS_SALES_BETWEEN_DATES_ROW_MAPPER);
         } catch (DataAccessException e) {
             log.error("Error occured while processing sales information based on gross sales change form: "+startDate+" to: "+endDate,e);
             throw new ApolloServiceException("Error occured while processing sales information based on gross sales change form: "+startDate+" to: "+endDate,e);
+        }
+        
+        return salesDtoList;
+    }
+    
+    @Override
+    public List<SalesDto> getGrossSalesUserSelectedData(String startDate, String endDate, String[] items) throws ApolloServiceException {
+        
+        validateDateRange(startDate, endDate);
+        
+        if(items == null || items.length == 0){
+            throw new IllegalArgumentException("Invalid items : "+items);
+        }
+        
+        MapSqlParameterSource namedParameters = new MapSqlParameterSource();
+        namedParameters.addValue("startDate", startDate);
+        namedParameters.addValue("endDate", endDate);
+        namedParameters.addValue("items", Arrays.asList(items));
+        
+        List<SalesDto> salesDtoList = null;
+        
+        try {
+            salesDtoList = namedParameterJdbcTemplate.query(
+                    SalesQuery.QUERY_GROSS_SALES_FOR_ITEMS_BETWEEN_DATES, namedParameters, 
+                    SalesQueryRowMapper.GROSS_SALES_BETWEEN_DATES_ROW_MAPPER);
+        } catch (DataAccessException e) {
+            log.error("Error occured while processing gross sales information based on input items form: "+startDate+" to: "+endDate,e);
+            throw new ApolloServiceException("Error occured while processing gross sales information based on input items form: "+startDate+" to: "+endDate,e);
         }
         
         return salesDtoList;
@@ -135,7 +166,7 @@ public class SalesServiceImpl implements SalesService {
         try {
             salesDtoList = namedParameterJdbcTemplate.query(
                     SalesQuery.QUERY_QUANTITY_SOLD_TOP_N_BETWEEN_DATES, namedParameters, 
-                    SalesQueryRowMapper.QUANTITY_SOLD_TOP_N_BETWEEN_DATES_ROW_MAPPER);
+                    SalesQueryRowMapper.QUANTITY_SOLD_BETWEEN_DATES_ROW_MAPPER);
         } catch (DataAccessException e) {
             log.error("Error occured while processing top sales information based on quantity form: "+startDate+" to: "+endDate,e);
             throw new ApolloServiceException("Error occured while processing top sales information based on quantity form: "+startDate+" to: "+endDate,e);
@@ -159,10 +190,40 @@ public class SalesServiceImpl implements SalesService {
         try {
             salesDtoList = namedParameterJdbcTemplate.query(
                     SalesQuery.QUERY_QUANTITY_SOLD_MOST_CHANGED_BETWEEN_DATES, namedParameters, 
-                    SalesQueryRowMapper.QUANTITY_SOLD_MOST_CHANGED_BETWEEN_DATES_ROW_MAPPER);
+                    SalesQueryRowMapper.QUANTITY_SOLD_BETWEEN_DATES_ROW_MAPPER);
         } catch (DataAccessException e) {
             log.error("Error occured while processing sales information based on most sold quantity change form: "+startDate+" to: "+endDate,e);
             throw new ApolloServiceException("Error occured while processing sales information based on most sold quantity change form: "+startDate+" to: "+endDate,e);
+        }
+        
+        return salesDtoList;
+    }
+    
+    @Override
+    public List<SalesDto> getQuantitySoldUserSelectData(String startDate, String endDate, String[] items) throws ApolloServiceException {
+        
+        validateDateRange(startDate, endDate);
+        
+        if(items == null || items.length == 0){
+            throw new IllegalArgumentException("Invalid items : "+items);
+        }
+        
+        log.info("input items:: "+items.length);
+        
+        MapSqlParameterSource namedParameters = new MapSqlParameterSource();
+        namedParameters.addValue("startDate", startDate);
+        namedParameters.addValue("endDate", endDate);
+        namedParameters.addValue("items", Arrays.asList(items));
+        
+        List<SalesDto> salesDtoList = null;
+        
+        try {
+            salesDtoList = namedParameterJdbcTemplate.query(
+                    SalesQuery.QUERY_QUANTITY_SOLD_FOR_ITEMS_BETWEEN_DATES, namedParameters, 
+                    SalesQueryRowMapper.QUANTITY_SOLD_BETWEEN_DATES_ROW_MAPPER);
+        } catch (DataAccessException e) {
+            log.error("Error occured while processing quantity sales information based on input items form: "+startDate+" to: "+endDate,e);
+            throw new ApolloServiceException("Error occured while processing quantity sales information based on input items form: "+startDate+" to: "+endDate,e);
         }
         
         return salesDtoList;

@@ -1,5 +1,7 @@
 package com.lexmark.apollo.api.service.impl;
 
+import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -17,12 +19,17 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Service;
 
 import com.lexmark.apollo.api.config.JdbcTemplateConfig;
+import com.lexmark.apollo.api.dto.CustomerDemographicProfileDto;
 import com.lexmark.apollo.api.dto.CustomerTrafficResponseDto;
-import com.lexmark.apollo.api.dto.CustomerTrafficResponseDto.CustomerDemographicProfile;
 import com.lexmark.apollo.api.dto.CustomerTrafficResponseDto.CustomerTraffic;
+import com.lexmark.apollo.api.dto.DemographicProfileDto;
+import com.lexmark.apollo.api.dto.SignageDto;
+import com.lexmark.apollo.api.dto.SignageEffectivenessResponseDto;
 import com.lexmark.apollo.api.service.CustomerTrafficService;
 import com.lexmark.apollo.api.service.queries.CustomerTrafficQuery;
 import com.lexmark.apollo.api.service.queries.CustomerTrafficQueryRowMapper;
+import com.lexmark.apollo.api.service.queries.SignageQuery;
+import com.lexmark.apollo.api.service.queries.SignageQueryRowMapper;
 import com.lexmark.apollo.api.util.ApolloServiceException;
 import com.lexmark.apollo.api.util.ApolloServiceHelper;
 
@@ -92,12 +99,12 @@ public class CustomerTrafficServiceImpl implements CustomerTrafficService {
             
             customerTrafficResponseDto.populateTrafficSegments();
             
-            List<CustomerTrafficResponseDto.DemographicProfile> demographicProfiles = namedParameterJdbcTemplate.query(
+            List<DemographicProfileDto> demographicProfiles = namedParameterJdbcTemplate.query(
                     CustomerTrafficQuery.SELECT_DEMOGRAPHIC_PROFILES_BETWEEN_DATES_QUERY, namedParameters, 
                     CustomerTrafficQueryRowMapper.DEMOGRAPHIC_PROFILE_ROW_MAPPER);
             
             if(demographicProfiles != null){
-                CustomerDemographicProfile customerDemographicProfile = CustomerTrafficResponseDto.createCustomerDemographicProfile(demographicProfiles);
+                CustomerDemographicProfileDto customerDemographicProfile = new CustomerDemographicProfileDto(demographicProfiles);
                 customerTrafficResponseDto.setCustomerDemographicProfile(customerDemographicProfile);
             }
         } catch (DataAccessException e) {
@@ -124,6 +131,4 @@ public class CustomerTrafficServiceImpl implements CustomerTrafficService {
         }
     }
     
-    
-
 }
