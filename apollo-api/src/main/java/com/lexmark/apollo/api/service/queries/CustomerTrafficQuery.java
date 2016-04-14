@@ -5,8 +5,14 @@ public class CustomerTrafficQuery {
     public static final String SELECT_CUSTOMER_TRAFFIC_BETWEEN_DATES_QUERY = "select start_time::date,sum(out_count) from lexmark_prod.quividi_gate where location_id=20345 and"
             + " start_time::date between :startDate and :endDate group by start_time::date";
     
+    public static final String SELECT_CUSTOMER_TRAFFIC_DETAILS_BETWEEN_DATES_QUERY = "select start_time,out_count from lexmark_prod.quividi_gate where location_id=20345 and"
+            + " start_time::date between :startDate and :endDate order by start_time";
+    
     public static final String SELECT_PROJECTED_CUSTOMER_TRAFFIC_BETWEEN_DATES_QUERY = "select pred_time::date,round(sum(people)) from lexmark_prod.cafeteria_prediction_data"
     		+ " where pred_time::date between :startDate and :endDate group by pred_time::date order by pred_time";
+    
+    public static final String SELECT_PROJECTED_CUSTOMER_TRAFFIC_DETAILS_BETWEEN_DATES_QUERY = "select pred_time,people from lexmark_prod.cafeteria_prediction_data"
+            + " where pred_time::date between :startDate and :endDate order by pred_time";
     
     public static final String SELECT_DEMOGRAPHIC_PROFILES_BETWEEN_DATES_QUERY = "select gender,age,sum(watcher_count) from lexmark_prod.quividi_watcher where start_time::date between :startDate and :endDate group by gender,age";
    
