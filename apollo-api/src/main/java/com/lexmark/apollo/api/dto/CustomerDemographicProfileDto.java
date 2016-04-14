@@ -15,6 +15,8 @@ public class CustomerDemographicProfileDto {
 	
 	@Getter
 	private int totalCount;
+	@Getter
+    private int averageCount;
     
     public CustomerDemographicProfileDto(List<DemographicProfileDto> demographicProfiles){
     	
@@ -82,7 +84,11 @@ public class CustomerDemographicProfileDto {
     }
     
     public void popuateAverageCount(int duration){
+        
     	if(duration > 0){
+    	    
+    	    averageCount = totalCount / duration;
+    	    
     		Integer unknownCount = valueMap.get(CustmerDemographyEnum.UNKNOWN);
     		Integer childCount = valueMap.get(CustmerDemographyEnum.CHILDREN);
     		Integer youthCount = valueMap.get(CustmerDemographyEnum.YOUTH);

@@ -9,6 +9,7 @@ import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.lexmark.apollo.api.dto.CustmerDemographyEnum;
 import com.lexmark.apollo.api.dto.CustomerDemographicProfileDto;
+import com.lexmark.apollo.api.util.ApolloServiceHelper;
 
 public class CustomerDemographicProfileSerializer extends JsonSerializer<CustomerDemographicProfileDto> {
 
@@ -23,7 +24,11 @@ public class CustomerDemographicProfileSerializer extends JsonSerializer<Custome
             if (valueMap.get(custmerDemographyEnum) != null) {
                 arg1.writeStartObject();
                 arg1.writeStringField("key", custmerDemographyEnum.getDescription());
-                arg1.writeNumberField("value", valueMap.get(custmerDemographyEnum));
+                Integer value = valueMap.get(custmerDemographyEnum);
+                arg1.writeNumberField("value", value);
+                int total = arg0.getAverageCount()  >0?arg0.getAverageCount():arg0.getTotalCount();
+                String percentage = ApolloServiceHelper.calculatePercentage(total, value);
+                arg1.writeStringField("percentage", percentage);
                 arg1.writeEndObject();
             }
         }
