@@ -4,8 +4,12 @@ import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.util.StringUtils;
 
@@ -97,6 +101,55 @@ public class ApolloServiceHelper {
         DecimalFormat decimalFormat = new DecimalFormat("##.00");
         percentageString = decimalFormat.format((input*100.0)/total);
         return Double.parseDouble(percentageString);
+    }
+    
+    
+    public static void popolateZeroSalesForMissingdates(List<SalesDto> salesDtoList,Date startDate,Date endDate){
+        Map<String,List<SalesDto>> salesDataMap = new HashMap<String,List<SalesDto>>();
+        
+        for(SalesDto salesDto:salesDtoList){
+            
+            List<SalesDto> subList = salesDataMap.get(salesDto.getItem());
+            if(subList == null){
+                subList = new ArrayList<SalesDto>();
+                salesDataMap.put(salesDto.getItem(), subList);
+            }
+            subList.add(salesDto);
+            
+        }
+        
+        int duration = getDurationInDays(startDate, endDate);
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(startDate);
+        
+        //SalesDto salesDtoDummy = new SalesDto();
+        //Map<Date,SalesDto> dummySalesMap = new HashMap<Date,SalesDto>();
+        List<String> dateList = new ArrayList<String>();
+        for(int i = 0;i < duration;i++){
+            dateList.add(formatDate(cal.getTime(),null));
+            cal.add(Calendar.DAY_OF_MONTH, 1);
+        }
+        
+        for(String date:dateList){
+            
+            SalesDto salesDtoDummy = new SalesDto();
+            salesDtoDummy.setDate(date);
+            
+            for(String item:salesDataMap.keySet()){
+                List<SalesDto> subList = salesDataMap.get(item);
+                salesDtoDummy.setFamilyGroup(subList.get(0).getFamilyGroup());
+                salesDtoDummy.setItem(item);
+                salesDtoDummy.setMajorGroup(subList.get(0).getMajorGroup());
+                
+                if(subList.contains(salesDtoDummy) == false){
+                    SalesDto salesDto = salesDtoDummy.copyBasicSales();
+                    subList.add(salesDto);
+                }
+                
+            }
+            
+        } 
+        
     }
         
     

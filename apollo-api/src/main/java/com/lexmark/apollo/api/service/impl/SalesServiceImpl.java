@@ -2,6 +2,7 @@ package com.lexmark.apollo.api.service.impl;
 
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -24,6 +25,8 @@ import com.lexmark.apollo.api.service.queries.SalesQuery;
 import com.lexmark.apollo.api.service.queries.SalesQueryRowMapper;
 import com.lexmark.apollo.api.util.ApolloServiceException;
 import com.lexmark.apollo.api.util.ApolloServiceHelper;
+import com.lexmark.apollo.api.util.SalesDtoComparatorByGrossSales;
+import com.lexmark.apollo.api.util.SalesDtoComparatorByQuantitySales;
 
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -96,6 +99,11 @@ public class SalesServiceImpl implements SalesService {
             throw new ApolloServiceException("Error occured while processing top sales information based on gross sale form: "+startDate+" to: "+endDate,e);
         }
         
+        if(salesDtoList != null && salesDtoList.isEmpty() == false){
+            ApolloServiceHelper.popolateZeroSalesForMissingdates(salesDtoList, ApolloServiceHelper.parseDate(startDate, null), ApolloServiceHelper.parseDate(endDate, null));
+            Collections.sort(salesDtoList, new SalesDtoComparatorByGrossSales());
+        }
+        
         return salesDtoList;
     }
 
@@ -118,6 +126,11 @@ public class SalesServiceImpl implements SalesService {
         } catch (DataAccessException e) {
             log.error("Error occured while processing sales information based on gross sales change form: "+startDate+" to: "+endDate,e);
             throw new ApolloServiceException("Error occured while processing sales information based on gross sales change form: "+startDate+" to: "+endDate,e);
+        }
+        
+        if(salesDtoList != null && salesDtoList.isEmpty() == false){
+            ApolloServiceHelper.popolateZeroSalesForMissingdates(salesDtoList, ApolloServiceHelper.parseDate(startDate, null), ApolloServiceHelper.parseDate(endDate, null));
+            Collections.sort(salesDtoList, new SalesDtoComparatorByGrossSales());
         }
         
         return salesDtoList;
@@ -148,6 +161,11 @@ public class SalesServiceImpl implements SalesService {
             throw new ApolloServiceException("Error occured while processing gross sales information based on input items form: "+startDate+" to: "+endDate,e);
         }
         
+        if(salesDtoList != null && salesDtoList.isEmpty() == false){
+            ApolloServiceHelper.popolateZeroSalesForMissingdates(salesDtoList, ApolloServiceHelper.parseDate(startDate, null), ApolloServiceHelper.parseDate(endDate, null));
+            Collections.sort(salesDtoList, new SalesDtoComparatorByGrossSales());
+        }
+        
         return salesDtoList;
     }
 
@@ -172,6 +190,11 @@ public class SalesServiceImpl implements SalesService {
             throw new ApolloServiceException("Error occured while processing top sales information based on quantity form: "+startDate+" to: "+endDate,e);
         }
         
+        if(salesDtoList != null && salesDtoList.isEmpty() == false){
+            ApolloServiceHelper.popolateZeroSalesForMissingdates(salesDtoList, ApolloServiceHelper.parseDate(startDate, null), ApolloServiceHelper.parseDate(endDate, null));
+            Collections.sort(salesDtoList, new SalesDtoComparatorByQuantitySales());
+        }
+        
         return salesDtoList;
     }
 
@@ -194,6 +217,11 @@ public class SalesServiceImpl implements SalesService {
         } catch (DataAccessException e) {
             log.error("Error occured while processing sales information based on most sold quantity change form: "+startDate+" to: "+endDate,e);
             throw new ApolloServiceException("Error occured while processing sales information based on most sold quantity change form: "+startDate+" to: "+endDate,e);
+        }
+        
+        if(salesDtoList != null && salesDtoList.isEmpty() == false){
+            ApolloServiceHelper.popolateZeroSalesForMissingdates(salesDtoList, ApolloServiceHelper.parseDate(startDate, null), ApolloServiceHelper.parseDate(endDate, null));
+            Collections.sort(salesDtoList, new SalesDtoComparatorByQuantitySales());
         }
         
         return salesDtoList;
@@ -224,6 +252,11 @@ public class SalesServiceImpl implements SalesService {
         } catch (DataAccessException e) {
             log.error("Error occured while processing quantity sales information based on input items form: "+startDate+" to: "+endDate,e);
             throw new ApolloServiceException("Error occured while processing quantity sales information based on input items form: "+startDate+" to: "+endDate,e);
+        }
+        
+        if(salesDtoList != null && salesDtoList.isEmpty() == false){
+            ApolloServiceHelper.popolateZeroSalesForMissingdates(salesDtoList, ApolloServiceHelper.parseDate(startDate, null), ApolloServiceHelper.parseDate(endDate, null));
+            Collections.sort(salesDtoList, new SalesDtoComparatorByQuantitySales());
         }
         
         return salesDtoList;
