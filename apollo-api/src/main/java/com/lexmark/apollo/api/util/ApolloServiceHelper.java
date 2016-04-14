@@ -122,8 +122,6 @@ public class ApolloServiceHelper {
         Calendar cal = Calendar.getInstance();
         cal.setTime(startDate);
         
-        //SalesDto salesDtoDummy = new SalesDto();
-        //Map<Date,SalesDto> dummySalesMap = new HashMap<Date,SalesDto>();
         List<String> dateList = new ArrayList<String>();
         for(int i = 0;i < duration;i++){
             dateList.add(formatDate(cal.getTime(),null));
@@ -135,6 +133,8 @@ public class ApolloServiceHelper {
             SalesDto salesDtoDummy = new SalesDto();
             salesDtoDummy.setDate(date);
             
+            List<SalesDto> dummySalesToBeAdded = new ArrayList<>();
+            
             for(String item:salesDataMap.keySet()){
                 List<SalesDto> subList = salesDataMap.get(item);
                 salesDtoDummy.setFamilyGroup(subList.get(0).getFamilyGroup());
@@ -143,9 +143,14 @@ public class ApolloServiceHelper {
                 
                 if(subList.contains(salesDtoDummy) == false){
                     SalesDto salesDto = salesDtoDummy.copyBasicSales();
-                    salesDtoList.add(salesDto);
+                    dummySalesToBeAdded.add(salesDto);
                 }
                 
+            }
+            
+            
+            if(dummySalesToBeAdded.size() < salesDataMap.keySet().size()){
+                salesDtoList.addAll(dummySalesToBeAdded);
             }
             
         } 
