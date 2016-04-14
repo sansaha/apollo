@@ -1,6 +1,7 @@
 package com.lexmark.apollo.api.service;
 
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +16,7 @@ import com.lexmark.apollo.api.util.ApolloServiceException;
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = ApolloApiApplication.class)
 @WebAppConfiguration
+@Ignore
 public class SignageServiceTest {
 	
 	@Autowired

@@ -15,6 +15,8 @@ public class CustomerDemographicProfileDto {
 	
 	@Getter
 	private int totalCount;
+	@Getter
+    private int averageCount;
     
     public CustomerDemographicProfileDto(List<DemographicProfileDto> demographicProfiles){
     	
@@ -43,28 +45,33 @@ public class CustomerDemographicProfileDto {
                 continue;
             }
             if(demographicProfile.getAge() == 2 && demographicProfile.getGender() == 0){
-                Integer youthCount = demographicProfile.getCount();
+            	Integer youthCount = valueMap.get(CustmerDemographyEnum.YOUTH);
+                youthCount = youthCount + demographicProfile.getCount();
                 valueMap.put(CustmerDemographyEnum.YOUTH, youthCount);
                 continue;
             }
             if(demographicProfile.getAge() == 2 && demographicProfile.getGender() == 1){
-                Integer youngMaleCount = demographicProfile.getCount();
+            	Integer youngMaleCount = valueMap.get(CustmerDemographyEnum.YOUNG_MALE);
+                youngMaleCount = youngMaleCount + demographicProfile.getCount();
                 valueMap.put(CustmerDemographyEnum.YOUNG_MALE, youngMaleCount);
                 continue;
             }
             if(demographicProfile.getAge() == 2 && demographicProfile.getGender() == 2){
-                Integer youngFemaleCount = demographicProfile.getCount();
+            	Integer youngFemaleCount = valueMap.get(CustmerDemographyEnum.YOUNG_FEMALE);
+                youngFemaleCount = youngFemaleCount + demographicProfile.getCount();
                 valueMap.put(CustmerDemographyEnum.YOUNG_FEMALE, youngFemaleCount);
                 continue;
             }
             
             if(demographicProfile.getAge() == 3 && demographicProfile.getGender() == 1){
-                Integer adultMaleCount = demographicProfile.getCount();
+            	Integer adultMaleCount = valueMap.get(CustmerDemographyEnum.ADULT_MALE);
+                adultMaleCount = adultMaleCount + demographicProfile.getCount();
                 valueMap.put(CustmerDemographyEnum.ADULT_MALE, adultMaleCount);
                 continue;
             }
             if(demographicProfile.getAge() == 3 && demographicProfile.getGender() == 2){
-                Integer adultFemaleCount = demographicProfile.getCount();
+            	Integer adultFemaleCount = valueMap.get(CustmerDemographyEnum.ADULT_FEMALE);
+                adultFemaleCount = adultFemaleCount + demographicProfile.getCount();
                 valueMap.put(CustmerDemographyEnum.ADULT_FEMALE, adultFemaleCount);
                 continue;
             }
@@ -74,6 +81,66 @@ public class CustomerDemographicProfileDto {
                 valueMap.put(CustmerDemographyEnum.SENIOR, seniorCount);
             }
         }
+    }
+    
+    public void popuateAverageCount(int duration){
+        
+    	if(duration > 0){
+    	    
+    	    averageCount = totalCount / duration;
+    	    
+    		Integer unknownCount = valueMap.get(CustmerDemographyEnum.UNKNOWN);
+    		Integer childCount = valueMap.get(CustmerDemographyEnum.CHILDREN);
+    		Integer youthCount = valueMap.get(CustmerDemographyEnum.YOUTH);
+    		Integer youngMaleCount = valueMap.get(CustmerDemographyEnum.YOUNG_MALE);
+    		Integer youngFemaleCount = valueMap.get(CustmerDemographyEnum.YOUNG_FEMALE);
+    		Integer adultMaleCount = valueMap.get(CustmerDemographyEnum.ADULT_MALE);
+    		Integer adultFemaleCount = valueMap.get(CustmerDemographyEnum.ADULT_FEMALE);
+    		Integer seniorCount = valueMap.get(CustmerDemographyEnum.SENIOR);
+    		
+    		if(unknownCount > 0){
+    			unknownCount = unknownCount / duration;
+    			valueMap.put(CustmerDemographyEnum.UNKNOWN, unknownCount);
+    		}
+    		
+			if(childCount > 0){
+			    childCount = childCount / duration;
+                valueMap.put(CustmerDemographyEnum.CHILDREN, childCount);	
+			}
+			
+			if(youthCount > 0){
+			    youthCount = youthCount / duration;
+				valueMap.put(CustmerDemographyEnum.YOUTH, youthCount);
+			}
+			
+			if(youngMaleCount > 0){
+			    youngMaleCount = youngMaleCount / duration;
+			    valueMap.put(CustmerDemographyEnum.YOUNG_MALE, youngMaleCount);
+				
+			}
+			
+			if(youngFemaleCount > 0){
+			    youngFemaleCount = youngFemaleCount / duration;
+				valueMap.put(CustmerDemographyEnum.YOUNG_FEMALE, youngFemaleCount);
+			}
+			
+			if(adultMaleCount > 0){
+			    adultMaleCount = adultMaleCount / duration;
+				valueMap.put(CustmerDemographyEnum.ADULT_MALE, adultMaleCount);
+			}
+			
+			if(adultFemaleCount > 0){
+			    adultFemaleCount = adultFemaleCount / duration;
+				valueMap.put(CustmerDemographyEnum.ADULT_FEMALE, adultFemaleCount);
+			}
+			
+			if(seniorCount > 0){
+			    seniorCount = seniorCount / duration;
+				valueMap.put(CustmerDemographyEnum.SENIOR, seniorCount);
+			}
+    		
+    		
+    	}
     }
 
     

@@ -30,6 +30,13 @@ public class PromotionDto implements Serializable, Comparable<PromotionDto> {
 
             result = this.getItem().compareTo(o.getItem());
         }
+        
+        if (result == 0) {
+
+            result = o.getStartDate().compareTo(this.getStartDate());
+        }
+        
+        
 
         return result;
     }
