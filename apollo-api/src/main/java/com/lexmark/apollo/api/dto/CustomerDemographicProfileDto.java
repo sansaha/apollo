@@ -43,28 +43,33 @@ public class CustomerDemographicProfileDto {
                 continue;
             }
             if(demographicProfile.getAge() == 2 && demographicProfile.getGender() == 0){
-                Integer youthCount = demographicProfile.getCount();
+            	Integer youthCount = valueMap.get(CustmerDemographyEnum.YOUTH);
+                youthCount = youthCount + demographicProfile.getCount();
                 valueMap.put(CustmerDemographyEnum.YOUTH, youthCount);
                 continue;
             }
             if(demographicProfile.getAge() == 2 && demographicProfile.getGender() == 1){
-                Integer youngMaleCount = demographicProfile.getCount();
+            	Integer youngMaleCount = valueMap.get(CustmerDemographyEnum.YOUNG_MALE);
+                youngMaleCount = youngMaleCount + demographicProfile.getCount();
                 valueMap.put(CustmerDemographyEnum.YOUNG_MALE, youngMaleCount);
                 continue;
             }
             if(demographicProfile.getAge() == 2 && demographicProfile.getGender() == 2){
-                Integer youngFemaleCount = demographicProfile.getCount();
+            	Integer youngFemaleCount = valueMap.get(CustmerDemographyEnum.YOUNG_FEMALE);
+                youngFemaleCount = youngFemaleCount + demographicProfile.getCount();
                 valueMap.put(CustmerDemographyEnum.YOUNG_FEMALE, youngFemaleCount);
                 continue;
             }
             
             if(demographicProfile.getAge() == 3 && demographicProfile.getGender() == 1){
-                Integer adultMaleCount = demographicProfile.getCount();
+            	Integer adultMaleCount = valueMap.get(CustmerDemographyEnum.ADULT_MALE);
+                adultMaleCount = adultMaleCount + demographicProfile.getCount();
                 valueMap.put(CustmerDemographyEnum.ADULT_MALE, adultMaleCount);
                 continue;
             }
             if(demographicProfile.getAge() == 3 && demographicProfile.getGender() == 2){
-                Integer adultFemaleCount = demographicProfile.getCount();
+            	Integer adultFemaleCount = valueMap.get(CustmerDemographyEnum.ADULT_FEMALE);
+                adultFemaleCount = adultFemaleCount + demographicProfile.getCount();
                 valueMap.put(CustmerDemographyEnum.ADULT_FEMALE, adultFemaleCount);
                 continue;
             }

@@ -1,7 +1,5 @@
 package com.lexmark.apollo.api.service.impl;
 
-import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -23,13 +21,9 @@ import com.lexmark.apollo.api.dto.CustomerDemographicProfileDto;
 import com.lexmark.apollo.api.dto.CustomerTrafficResponseDto;
 import com.lexmark.apollo.api.dto.CustomerTrafficResponseDto.CustomerTraffic;
 import com.lexmark.apollo.api.dto.DemographicProfileDto;
-import com.lexmark.apollo.api.dto.SignageDto;
-import com.lexmark.apollo.api.dto.SignageEffectivenessResponseDto;
 import com.lexmark.apollo.api.service.CustomerTrafficService;
 import com.lexmark.apollo.api.service.queries.CustomerTrafficQuery;
 import com.lexmark.apollo.api.service.queries.CustomerTrafficQueryRowMapper;
-import com.lexmark.apollo.api.service.queries.SignageQuery;
-import com.lexmark.apollo.api.service.queries.SignageQueryRowMapper;
 import com.lexmark.apollo.api.util.ApolloServiceException;
 import com.lexmark.apollo.api.util.ApolloServiceHelper;
 
