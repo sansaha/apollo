@@ -98,30 +98,38 @@ public class CustomerDemographicProfileDto {
     		}
     		
 			if(childCount > 0){
-			    			
-			    		}
+			    childCount = childCount / duration;
+                valueMap.put(CustmerDemographyEnum.CHILDREN, childCount);	
+			}
 			
 			if(youthCount > 0){
+			    youthCount = youthCount / duration;
 				valueMap.put(CustmerDemographyEnum.YOUTH, youthCount);
 			}
 			
 			if(youngMaleCount > 0){
+			    youngMaleCount = youngMaleCount / duration;
+			    valueMap.put(CustmerDemographyEnum.YOUNG_MALE, youngMaleCount);
 				
 			}
 			
 			if(youngFemaleCount > 0){
+			    youngFemaleCount = youngFemaleCount / duration;
 				valueMap.put(CustmerDemographyEnum.YOUNG_FEMALE, youngFemaleCount);
 			}
 			
 			if(adultMaleCount > 0){
+			    adultMaleCount = adultMaleCount / duration;
 				valueMap.put(CustmerDemographyEnum.ADULT_MALE, adultMaleCount);
 			}
 			
 			if(adultFemaleCount > 0){
+			    adultFemaleCount = adultFemaleCount / duration;
 				valueMap.put(CustmerDemographyEnum.ADULT_FEMALE, adultFemaleCount);
 			}
 			
 			if(seniorCount > 0){
+			    seniorCount = seniorCount / duration;
 				valueMap.put(CustmerDemographyEnum.SENIOR, seniorCount);
 			}
     		

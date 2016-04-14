@@ -174,6 +174,7 @@ public class SignageServiceImpl implements SignageService {
 								signageDto.getEndDateTime());
 						int averageTraffic = totalTraffic / signageDuration;
 						signageDto.setViewerCount(averageTraffic);
+						customerDemographicProfileDto.popuateAverageCount(signageDuration);
 						signageDto.setCustomersDemographicProfile(customerDemographicProfileDto);
 					}
 
