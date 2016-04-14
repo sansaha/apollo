@@ -80,6 +80,54 @@ public class CustomerDemographicProfileDto {
             }
         }
     }
+    
+    public void popuateAverageCount(int duration){
+    	if(duration > 0){
+    		Integer unknownCount = valueMap.get(CustmerDemographyEnum.UNKNOWN);
+    		Integer childCount = valueMap.get(CustmerDemographyEnum.CHILDREN);
+    		Integer youthCount = valueMap.get(CustmerDemographyEnum.YOUTH);
+    		Integer youngMaleCount = valueMap.get(CustmerDemographyEnum.YOUNG_MALE);
+    		Integer youngFemaleCount = valueMap.get(CustmerDemographyEnum.YOUNG_FEMALE);
+    		Integer adultMaleCount = valueMap.get(CustmerDemographyEnum.ADULT_MALE);
+    		Integer adultFemaleCount = valueMap.get(CustmerDemographyEnum.ADULT_FEMALE);
+    		Integer seniorCount = valueMap.get(CustmerDemographyEnum.SENIOR);
+    		
+    		if(unknownCount > 0){
+    			unknownCount = unknownCount / duration;
+    			valueMap.put(CustmerDemographyEnum.UNKNOWN, unknownCount);
+    		}
+    		
+			if(childCount > 0){
+			    			
+			    		}
+			
+			if(youthCount > 0){
+				valueMap.put(CustmerDemographyEnum.YOUTH, youthCount);
+			}
+			
+			if(youngMaleCount > 0){
+				
+			}
+			
+			if(youngFemaleCount > 0){
+				valueMap.put(CustmerDemographyEnum.YOUNG_FEMALE, youngFemaleCount);
+			}
+			
+			if(adultMaleCount > 0){
+				valueMap.put(CustmerDemographyEnum.ADULT_MALE, adultMaleCount);
+			}
+			
+			if(adultFemaleCount > 0){
+				valueMap.put(CustmerDemographyEnum.ADULT_FEMALE, adultFemaleCount);
+			}
+			
+			if(seniorCount > 0){
+				valueMap.put(CustmerDemographyEnum.SENIOR, seniorCount);
+			}
+    		
+    		
+    	}
+    }
 
     
   /*  private Integer unknownCount = 0;//(0,*) || (3,0)
