@@ -150,31 +150,31 @@ public class CustomerTrafficServiceImpl implements CustomerTrafficService {
         Map<Date,CustomerTrafficDetailsSegment> allSegments = new HashMap<Date,CustomerTrafficDetailsSegment>();
         
         if(customerTrafficResponseDto.getActualTraffics().isEmpty() == false){
-            for(CustomerTrafficDetailsSegment customerTrafficDetailsSegment:customerTrafficResponseDto.getActualTraffics()){
-                customerTrafficDetailsSegment.setItem(CustomerTrafficDetailsResponseDto.ITEM_ACTUAL_TRAFFIC);
+            for(CustomerTrafficDetailsSegment customerTrafficDetailsSegmentActual:customerTrafficResponseDto.getActualTraffics()){
+                customerTrafficDetailsSegmentActual.setItem(CustomerTrafficDetailsResponseDto.ITEM_ACTUAL_TRAFFIC);
                 CustomerTrafficDetailsSegment customerTrafficDetailsSegmentDifference = CustomerTrafficDetailsResponseDto.createCustomerTrafficDetailsSegment();
                 customerTrafficDetailsSegmentDifference.setItem(CustomerTrafficDetailsResponseDto.ITEM_TRAFFIC_DIFFERENCE);
-                customerTrafficDetailsSegmentDifference.setDate(customerTrafficDetailsSegment.getDate());
-                customerTrafficDetailsSegmentDifference.setValue(customerTrafficDetailsSegment.getValue()*-1);
-                allSegments.put(customerTrafficDetailsSegment.getDate(), customerTrafficDetailsSegmentDifference);
+                customerTrafficDetailsSegmentDifference.setDate(customerTrafficDetailsSegmentActual.getDate());
+                customerTrafficDetailsSegmentDifference.setValue(customerTrafficDetailsSegmentActual.getValue()*-1);
+                allSegments.put(customerTrafficDetailsSegmentActual.getDate(), customerTrafficDetailsSegmentDifference);
                 customerTrafficResponseDto.addTrafficsDifferenceSegment(customerTrafficDetailsSegmentDifference);
             }
         }
         
         if(customerTrafficResponseDto.getProjectedTraffics().isEmpty() == false){
-            for(CustomerTrafficDetailsSegment customerTrafficDetailsSegment:customerTrafficResponseDto.getProjectedTraffics()){
-                customerTrafficDetailsSegment.setItem(CustomerTrafficDetailsResponseDto.ITEM_PROJECTED_TRAFFIC);
+            for(CustomerTrafficDetailsSegment customerTrafficDetailsSegmentProjected:customerTrafficResponseDto.getProjectedTraffics()){
+                customerTrafficDetailsSegmentProjected.setItem(CustomerTrafficDetailsResponseDto.ITEM_PROJECTED_TRAFFIC);
                 
-                CustomerTrafficDetailsSegment customerTrafficDetailsSegmentDifference = allSegments.get(customerTrafficDetailsSegment.getDate());
+                CustomerTrafficDetailsSegment customerTrafficDetailsSegmentDifference = allSegments.get(customerTrafficDetailsSegmentProjected.getDate());
                 if(customerTrafficDetailsSegmentDifference == null){
                     customerTrafficDetailsSegmentDifference = CustomerTrafficDetailsResponseDto.createCustomerTrafficDetailsSegment();
                     customerTrafficDetailsSegmentDifference.setItem(CustomerTrafficDetailsResponseDto.ITEM_TRAFFIC_DIFFERENCE);
-                    customerTrafficDetailsSegmentDifference.setDate(customerTrafficDetailsSegment.getDate());
+                    customerTrafficDetailsSegmentDifference.setDate(customerTrafficDetailsSegmentProjected.getDate());
                     customerTrafficDetailsSegmentDifference.setValue(0);
                     customerTrafficResponseDto.addTrafficsDifferenceSegment(customerTrafficDetailsSegmentDifference);
                 }
                 
-                customerTrafficDetailsSegmentDifference.setValue(customerTrafficDetailsSegment.getValue()-Math.abs(customerTrafficDetailsSegmentDifference.getValue()));
+                customerTrafficDetailsSegmentDifference.setValue(customerTrafficDetailsSegmentProjected.getValue()-Math.abs(customerTrafficDetailsSegmentDifference.getValue()));
             }
         }
         

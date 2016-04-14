@@ -28,7 +28,7 @@ public class CustomerTrafficQueryRowMapper {
         @Override
         public CustomerTrafficDetailsResponseDto.CustomerTrafficDetailsSegment mapRow(ResultSet rs, int arg1) throws SQLException {
             CustomerTrafficDetailsResponseDto.CustomerTrafficDetailsSegment customerTrafficDetailsSegment = CustomerTrafficDetailsResponseDto.createCustomerTrafficDetailsSegment();
-            customerTrafficDetailsSegment.setDate(rs.getDate(1));
+            customerTrafficDetailsSegment.setDate(rs.getTimestamp(1));
             customerTrafficDetailsSegment.setValue(rs.getInt(2));
             return customerTrafficDetailsSegment;
         }
@@ -52,7 +52,7 @@ public class CustomerTrafficQueryRowMapper {
         @Override
         public CustomerTrafficDetailsResponseDto.CustomerTrafficDetailsSegment mapRow(ResultSet rs, int arg1) throws SQLException {
             CustomerTrafficDetailsResponseDto.CustomerTrafficDetailsSegment customerTrafficDetailsSegment = CustomerTrafficDetailsResponseDto.createCustomerTrafficDetailsSegment();
-            customerTrafficDetailsSegment.setDate(rs.getDate(1));
+            customerTrafficDetailsSegment.setDate(rs.getTimestamp(1));
             customerTrafficDetailsSegment.setValue((int) Math.ceil(rs.getDouble(2)));
             return customerTrafficDetailsSegment;
         }
