@@ -27,8 +27,8 @@ public class CustomerDemographicProfileSerializer extends JsonSerializer<Custome
                 Integer value = valueMap.get(custmerDemographyEnum);
                 arg1.writeNumberField("value", value);
                 int total = arg0.getAverageCount()  >0?arg0.getAverageCount():arg0.getTotalCount();
-                String percentage = ApolloServiceHelper.calculatePercentage(total, value);
-                arg1.writeStringField("percentage", percentage);
+                double percentage = ApolloServiceHelper.calculatePercentage(total, value);
+                arg1.writeNumberField("percentage", percentage);
                 arg1.writeEndObject();
             }
         }
