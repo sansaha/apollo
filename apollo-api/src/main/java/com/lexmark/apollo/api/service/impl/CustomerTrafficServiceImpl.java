@@ -1,9 +1,12 @@
 package com.lexmark.apollo.api.service.impl;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 
 import javax.annotation.PostConstruct;
 import javax.sql.DataSource;
@@ -119,7 +122,8 @@ public class CustomerTrafficServiceImpl implements CustomerTrafficService {
             
             
             if(customerTrafficSegmentsActual != null){
-                customerTrafficResponseDto.setActualTraffics(customerTrafficSegmentsActual);
+                Set<CustomerTrafficDetailsSegment> customerTrafficDetailsSegmentSet = new TreeSet<CustomerTrafficDetailsSegment>(customerTrafficSegmentsActual);
+                customerTrafficResponseDto.setActualTraffics(new ArrayList<CustomerTrafficDetailsSegment>(customerTrafficDetailsSegmentSet));
             }
             
             //customerTrafficResponseDto.sortCustomerTraffic();
@@ -129,7 +133,8 @@ public class CustomerTrafficServiceImpl implements CustomerTrafficService {
                     CustomerTrafficQueryRowMapper.CUSTOMER_TRAFFIC_DETAILS_PROJECTED_ROW_MAPPER);
             
             if(customerTrafficSegmentsProjected != null){
-                customerTrafficResponseDto.setProjectedTraffics(customerTrafficSegmentsProjected);
+                Set<CustomerTrafficDetailsSegment> customerTrafficDetailsSegmentSet = new TreeSet<CustomerTrafficDetailsSegment>(customerTrafficSegmentsProjected);
+                customerTrafficResponseDto.setProjectedTraffics(new ArrayList<CustomerTrafficDetailsSegment>(customerTrafficDetailsSegmentSet));
             }
             
             populateTrafficDifferenceSegments(customerTrafficResponseDto);
