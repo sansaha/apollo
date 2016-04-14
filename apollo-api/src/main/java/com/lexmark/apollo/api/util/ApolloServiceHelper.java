@@ -143,7 +143,7 @@ public class ApolloServiceHelper {
                 
                 if(subList.contains(salesDtoDummy) == false){
                     SalesDto salesDto = salesDtoDummy.copyBasicSales();
-                    subList.add(salesDto);
+                    salesDtoList.add(salesDto);
                 }
                 
             }

@@ -25,8 +25,6 @@ import com.lexmark.apollo.api.service.queries.SalesQuery;
 import com.lexmark.apollo.api.service.queries.SalesQueryRowMapper;
 import com.lexmark.apollo.api.util.ApolloServiceException;
 import com.lexmark.apollo.api.util.ApolloServiceHelper;
-import com.lexmark.apollo.api.util.SalesDtoComparatorByGrossSales;
-import com.lexmark.apollo.api.util.SalesDtoComparatorByQuantitySales;
 
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -101,7 +99,7 @@ public class SalesServiceImpl implements SalesService {
         
         if(salesDtoList != null && salesDtoList.isEmpty() == false){
             ApolloServiceHelper.popolateZeroSalesForMissingdates(salesDtoList, ApolloServiceHelper.parseDate(startDate, null), ApolloServiceHelper.parseDate(endDate, null));
-            Collections.sort(salesDtoList, new SalesDtoComparatorByGrossSales());
+            Collections.sort(salesDtoList);
         }
         
         return salesDtoList;
@@ -130,7 +128,7 @@ public class SalesServiceImpl implements SalesService {
         
         if(salesDtoList != null && salesDtoList.isEmpty() == false){
             ApolloServiceHelper.popolateZeroSalesForMissingdates(salesDtoList, ApolloServiceHelper.parseDate(startDate, null), ApolloServiceHelper.parseDate(endDate, null));
-            Collections.sort(salesDtoList, new SalesDtoComparatorByGrossSales());
+            Collections.sort(salesDtoList);
         }
         
         return salesDtoList;
@@ -163,7 +161,7 @@ public class SalesServiceImpl implements SalesService {
         
         if(salesDtoList != null && salesDtoList.isEmpty() == false){
             ApolloServiceHelper.popolateZeroSalesForMissingdates(salesDtoList, ApolloServiceHelper.parseDate(startDate, null), ApolloServiceHelper.parseDate(endDate, null));
-            Collections.sort(salesDtoList, new SalesDtoComparatorByGrossSales());
+            Collections.sort(salesDtoList);
         }
         
         return salesDtoList;
@@ -192,7 +190,7 @@ public class SalesServiceImpl implements SalesService {
         
         if(salesDtoList != null && salesDtoList.isEmpty() == false){
             ApolloServiceHelper.popolateZeroSalesForMissingdates(salesDtoList, ApolloServiceHelper.parseDate(startDate, null), ApolloServiceHelper.parseDate(endDate, null));
-            Collections.sort(salesDtoList, new SalesDtoComparatorByQuantitySales());
+            Collections.sort(salesDtoList);
         }
         
         return salesDtoList;
@@ -221,7 +219,7 @@ public class SalesServiceImpl implements SalesService {
         
         if(salesDtoList != null && salesDtoList.isEmpty() == false){
             ApolloServiceHelper.popolateZeroSalesForMissingdates(salesDtoList, ApolloServiceHelper.parseDate(startDate, null), ApolloServiceHelper.parseDate(endDate, null));
-            Collections.sort(salesDtoList, new SalesDtoComparatorByQuantitySales());
+            Collections.sort(salesDtoList);
         }
         
         return salesDtoList;
@@ -256,7 +254,7 @@ public class SalesServiceImpl implements SalesService {
         
         if(salesDtoList != null && salesDtoList.isEmpty() == false){
             ApolloServiceHelper.popolateZeroSalesForMissingdates(salesDtoList, ApolloServiceHelper.parseDate(startDate, null), ApolloServiceHelper.parseDate(endDate, null));
-            Collections.sort(salesDtoList, new SalesDtoComparatorByQuantitySales());
+            Collections.sort(salesDtoList);
         }
         
         return salesDtoList;
