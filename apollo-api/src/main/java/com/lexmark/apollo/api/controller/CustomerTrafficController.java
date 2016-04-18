@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.lexmark.apollo.api.dto.CustomerTrafficDetailsResponseDto;
 import com.lexmark.apollo.api.dto.CustomerTrafficResponseDto;
 import com.lexmark.apollo.api.service.CustomerTrafficService;
 import com.lexmark.apollo.api.util.ApolloServiceException;
@@ -32,6 +33,20 @@ public class CustomerTrafficController {
         }
 
         return customerTrafficResponseDto;
+   }
+    
+    @RequestMapping(value = "/customer-traffic-details", method = RequestMethod.GET, produces = APPLICATION_JSON_VALUE)
+    public CustomerTrafficDetailsResponseDto getCustomerTrafficDetails(@RequestParam String startDate,@RequestParam String endDate){
+        
+        CustomerTrafficDetailsResponseDto customerTrafficDetailsResponseDto = null;
+        
+        try {
+            customerTrafficDetailsResponseDto = customerTrafficService.getCustomerTrafficDetailsData(startDate, endDate);
+        } catch (ApolloServiceException e) {
+            e.printStackTrace();
+        }
+
+        return customerTrafficDetailsResponseDto;
    }
 
 }
