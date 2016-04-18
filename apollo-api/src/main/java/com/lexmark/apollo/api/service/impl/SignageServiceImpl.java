@@ -66,8 +66,9 @@ public class SignageServiceImpl implements SignageService {
 			throw new IllegalArgumentException("Invalid formDate : " + fromDate, e);
 		}
 
+		Date endDate = null;
 		try {
-			ApolloServiceHelper.parseDate(toDate, null);
+			endDate = ApolloServiceHelper.parseDate(toDate, null);
 		} catch (IllegalArgumentException e) {
 			log.error("Invalid toDate : " + toDate, e);
 			throw new IllegalArgumentException("Invalid toDate : " + toDate, e);
@@ -121,6 +122,7 @@ public class SignageServiceImpl implements SignageService {
 				List<SignageDto> historicalSignages = new ArrayList<SignageDto>();
 
 				Calendar yesterday = Calendar.getInstance();
+				yesterday.setTime(endDate);
 				yesterday.add(Calendar.DAY_OF_MONTH, -1);
 				yesterday.set(Calendar.HOUR_OF_DAY, 0);
 				yesterday.set(Calendar.MINUTE, 0);
