@@ -98,8 +98,10 @@ public class ApolloServiceHelper {
     
     public static Double calculatePercentage(int total,int input){
         String percentageString = "0";
-        DecimalFormat decimalFormat = new DecimalFormat("##.00");
-        percentageString = decimalFormat.format((input*100.0)/total);
+        if(total > 0){
+        	DecimalFormat decimalFormat = new DecimalFormat("##.00");
+            percentageString = decimalFormat.format((input*100.0)/total);
+        }
         return Double.parseDouble(percentageString);
     }
     
